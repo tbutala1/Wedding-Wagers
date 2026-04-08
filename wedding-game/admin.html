@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Wagers Admin</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="loading" class="loading-screen hidden">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="screen">
+        <div class="container">
+            <h1>Admin Login</h1>
+            <p class="subtitle">Enter admin credentials</p>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="adminPassword">Admin Password</label>
+                    <input type="password" id="adminPassword" name="adminPassword" required>
+                    <span class="error" id="passwordError"></span>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="adminDashboard" class="screen hidden">
+        <div class="container">
+            <div class="admin-header">
+                <h1>Admin Dashboard</h1>
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            </div>
+
+            <div class="admin-tabs">
+                <button class="tab-btn active" onclick="switchTab('answers')">Set Answers</button>
+                <button class="tab-btn" onclick="switchTab('users')">Manage Users</button>
+                <button class="tab-btn" onclick="switchTab('leaderboard')">View Leaderboard</button>
+            </div>
+
+            <!-- Set Answers Tab -->
+            <div id="answersTab" class="tab-content active">
+                <h2>Enter Correct Answers</h2>
+                <form id="answersForm">
+                    <div class="form-group">
+                        <label>Will it rain on the wedding day?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="answer1" value="Yes">
+                                <span>Yes</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="answer1" value="No">
+                                <span>No</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Will Tim cry when Amanda walks down the aisle?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="answer2" value="Yes">
+                                <span>Yes</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="answer2" value="No">
+                                <span>No</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>What will be the neckline of Amanda's dress?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="answer3" value="V-Neck">
+                                <span>V-Neck</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="answer3" value="Sweetheart">
+                                <span>Sweetheart</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="answer3" value="Strapless/Bandeau">
+                                <span>Strapless/Bandeau</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="answer3" value="Scoop Neck">
+                                <span>Scoop Neck</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="answer3" value="Illusion/Off-Shoulder">
+                                <span>Illusion/Off-Shoulder</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Will the first dance be over or under 2 minutes?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="answer4" value="Over 2 minutes">
+                                <span>Over 2 minutes</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="answer4" value="Under 2 minutes">
+                                <span>Under 2 minutes</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Average height of the groomsmen (Feet and Inches)</label>
+                        <div class="height-input">
+                            <div class="form-group inline">
+                                <label for="answer5Feet">Feet</label>
+                                <input type="number" id="answer5Feet" name="answer5_feet" min="4" max="7">
+                            </div>
+                            <div class="form-group inline">
+                                <label for="answer5Inches">Inches</label>
+                                <input type="number" id="answer5Inches" name="answer5_inches" min="0" max="11">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Will the Best Man speech be over or under 3 minutes?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="answer6" value="Over 3 minutes">
+                                <span>Over 3 minutes</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="answer6" value="Under 3 minutes">
+                                <span>Under 3 minutes</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="answer7">How many times will Stevie be mentioned during the speeches?</label>
+                        <input type="number" id="answer7" name="answer7" min="0" max="100">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Answers</button>
+                </form>
+            </div>
+
+            <!-- Manage Users Tab -->
+            <div id="usersTab" class="tab-content hidden">
+                <h2>Manage Users</h2>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Submitted At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="3" class="text-center">Loading users...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- View Leaderboard Tab -->
+            <div id="leaderboardTab" class="tab-content hidden">
+                <h2>Leaderboard Preview</h2>
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Correct Answers</th>
+                            <th>Score (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminLeaderboardBody">
+                        <tr>
+                            <td colspan="4" class="text-center">Loading leaderboard...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

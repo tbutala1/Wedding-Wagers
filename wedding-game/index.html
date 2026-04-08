@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tim & Amanda's Wedding Wagers</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="loading" class="loading-screen hidden">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Registration Screen -->
+    <div id="registrationScreen" class="screen">
+        <div class="container">
+            <h1>🎁 Wedding Wagers 🎁</h1>
+            <p class="subtitle">Test your wedding day predictions!</p>
+            
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                    <span class="error" id="firstNameError"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                    <span class="error" id="lastNameError"></span>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Continue</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Questions Screen -->
+    <div id="questionsScreen" class="screen hidden">
+        <div class="container">
+            <h1>Wedding Predictions Quiz</h1>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            <p class="progress-text"><span id="currentQuestion">1</span>/<span id="totalQuestions">7</span></p>
+
+            <form id="questionsForm">
+                <!-- Question 1: Will it rain -->
+                <div class="question-container" id="question1">
+                    <h2>Will it rain on the wedding day?</h2>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q1" value="Yes" required>
+                            <span>Yes</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q1" value="No" required>
+                            <span>No</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 2: Will Tim cry -->
+                <div class="question-container" id="question2">
+                    <h2>Will Tim cry when Amanda walks down the aisle?</h2>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q2" value="Yes" required>
+                            <span>Yes</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q2" value="No" required>
+                            <span>No</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 3: Amanda's neckline -->
+                <div class="question-container" id="question3">
+                    <h2>What will be the neckline of Amanda's dress?</h2>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q3" value="V-Neck" required>
+                            <span>V-Neck</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="Sweetheart" required>
+                            <span>Sweetheart</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="Strapless/Bandeau" required>
+                            <span>Strapless/Bandeau</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="Scoop Neck" required>
+                            <span>Scoop Neck</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="Illusion/Off-Shoulder" required>
+                            <span>Illusion/Off-Shoulder</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 4: First dance duration -->
+                <div class="question-container" id="question4">
+                    <h2>Will the first dance be over or under 2 minutes?</h2>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q4" value="Over 2 minutes" required>
+                            <span>Over 2 minutes</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q4" value="Under 2 minutes" required>
+                            <span>Under 2 minutes</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 5: Groomsmen height -->
+                <div class="question-container" id="question5">
+                    <h2>What is the average height of the groomsmen?</h2>
+                    <div class="height-input">
+                        <div class="form-group inline">
+                            <label for="heightFeet">Feet</label>
+                            <input type="number" id="heightFeet" name="q5_feet" min="4" max="7" required>
+                        </div>
+                        <div class="form-group inline">
+                            <label for="heightInches">Inches</label>
+                            <input type="number" id="heightInches" name="q5_inches" min="0" max="11" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question 6: Best Man speech -->
+                <div class="question-container" id="question6">
+                    <h2>Will the Best Man speech be over or under 3 minutes?</h2>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q6" value="Over 3 minutes" required>
+                            <span>Over 3 minutes</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="Under 3 minutes" required>
+                            <span>Under 3 minutes</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Question 7: Stevie mentions -->
+                <div class="question-container" id="question7">
+                    <h2>How many times will Stevie be mentioned during the speeches?</h2>
+                    <div class="form-group">
+                        <input type="number" id="stevieMentions" name="q7" min="0" max="100" required placeholder="Enter a number">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary full-width">Submit Predictions</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success/Leaderboard Screen -->
+    <div id="successScreen" class="screen hidden">
+        <div class="container">
+            <h1>✨ Thanks for Playing! ✨</h1>
+            <p class="subtitle">Your predictions have been recorded.</p>
+            
+            <div class="success-box">
+                <p>Results will be scored once the wedding day answers are confirmed by the admin.</p>
+                <p>Check the leaderboard to see how you stack up!</p>
+            </div>
+
+            <a href="leaderboard.html" class="btn btn-primary">View Leaderboard</a>
+            <button onclick="location.href='index.html'" class="btn btn-secondary">Play Again</button>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

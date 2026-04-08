@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Wagers Leaderboard</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="loading" class="loading-screen hidden">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <div class="container">
+        <h1>🏆 Wedding Wagers Leaderboard 🏆</h1>
+        
+        <div class="leaderboard-controls">
+            <button id="refreshBtn" class="btn btn-secondary">🔄 Refresh</button>
+            <a href="index.html" class="btn btn-secondary">← Back</a>
+        </div>
+
+        <div id="leaderboardContainer">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Correct Answers</th>
+                        <th>Score (%)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboardBody">
+                    <tr>
+                        <td colspan="5" class="text-center">Loading results...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="noScoresMessage" class="hidden">
+            <p class="subtitle">Admin has not yet graded the predictions. Check back soon!</p>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/leaderboard.js"></script>
+</body>
+</html>
