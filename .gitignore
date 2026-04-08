@@ -1,0 +1,31 @@
+# Environment variables - NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build
+dist/
+build/
+.cache/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Local config backups
+*.config.bak
