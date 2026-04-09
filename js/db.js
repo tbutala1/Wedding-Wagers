@@ -152,6 +152,11 @@ class Database {
             return leaderboardWithCounts;
         } catch (error) {
             console.error('Error fetching leaderboard:', error);
+        }
+    }
+
+    // Delete a response
+    async deleteResponse(id) {
         try {
             const { error } = await this.supabase
                 .from('responses')
