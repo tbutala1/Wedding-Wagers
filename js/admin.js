@@ -72,27 +72,31 @@ async function handleSaveAnswers(e) {
             q2: document.querySelector('input[name="answer2"]:checked')?.value,
             q3: document.querySelector('input[name="answer3"]:checked')?.value,
             q4: document.querySelector('input[name="answer4"]:checked')?.value,
-            q5_feet: parseInt(document.getElementById('answer5Feet').value),
-            q5_inches: parseInt(document.getElementById('answer5Inches').value),
+            q5_feet: parseInt(document.getElementById('answer5Feet').value) || null,
+            q5_inches: parseInt(document.getElementById('answer5Inches').value) || null,
             q6: document.querySelector('input[name="answer6"]:checked')?.value,
-            q7: parseInt(document.getElementById('answer7').value)
+            q7: parseInt(document.getElementById('answer7').value) || null
         };
         
-        // Validate
-        if (!answers.q1 || !answers.q2 || !answers.q3 || !answers.q4 || 
-            !answers.q5_feet || answers.q5_inches === null || !answers.q6 || !answers.q7) {
-            alert('Please fill in all answers');
+        // Check if at least one answer is provided
+        const hasAnyAnswer = Object.values(answers).some(val => val !== null && val !== undefined && val !== '');
+        if (!hasAnyAnswer) {
+            alert('Please enter at least one answer');
             showLoading(false);
             return;
         }
         
+        // Count completed answers
+        const completedCount = Object.values(answers).filter(val => val !== null && val !== undefined && val !== '').length;
+        console.log(`Saving ${completedCount} answers...`);
+        
         await db.saveCorrectAnswers(answers);
         
-        // Recalculate scores
+        // Recalculate scores (only for questions that are complete)
         await db.calculateScores();
         
         showLoading(false);
-        alert('Answers saved successfully! Leaderboard has been updated.');
+        alert(`✅ Saved! ${completedCount} question(s) answered.\nYou can update more answers later as you learn them.`);
         
         // Refresh all data
         loadAdminData();

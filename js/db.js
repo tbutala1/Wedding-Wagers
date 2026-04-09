@@ -99,9 +99,24 @@ class Database {
         }
     }
 
-    // Save correct answers (admin function)
+    // Save correct answers (admin function) - allows partial updates
     async saveCorrectAnswers(answers) {
         try {
+            // Build update object - only include fields that have values (not null/undefined)
+            const updateData = {};
+            if (answers.q1 !== null && answers.q1 !== undefined) updateData.q1 = answers.q1;
+            if (answers.q2 !== null && answers.q2 !== undefined) updateData.q2 = answers.q2;
+            if (answers.q3 !== null && answers.q3 !== undefined) updateData.q3 = answers.q3;
+            if (answers.q4 !== null && answers.q4 !== undefined) updateData.q4 = answers.q4;
+            if (answers.q5_feet !== null && answers.q5_feet !== undefined) updateData.q5_feet = answers.q5_feet;
+            if (answers.q5_inches !== null && answers.q5_inches !== undefined) updateData.q5_inches = answers.q5_inches;
+            if (answers.q6 !== null && answers.q6 !== undefined) updateData.q6 = answers.q6;
+            if (answers.q7 !== null && answers.q7 !== undefined) updateData.q7 = answers.q7;
+            
+            updateData.updated_at = new Date().toISOString();
+            
+            console.log('Saving answers (partial update):', updateData);
+            
             // First, try to get existing answers
             const { data: existingData, error: fetchError } = await this.supabase
                 .from('correct_answers')
@@ -112,41 +127,33 @@ class Database {
 
             let result;
             if (existingData && existingData.length > 0) {
-                // Update existing
+                // Update existing - only update provided fields
                 const { data, error } = await this.supabase
                     .from('correct_answers')
-                    .update({
-                        q1: answers.q1,
-                        q2: answers.q2,
-                        q3: answers.q3,
-                        q4: answers.q4,
-                        q5_feet: answers.q5_feet,
-                        q5_inches: answers.q5_inches,
-                        q6: answers.q6,
-                        q7: answers.q7,
-                        updated_at: new Date().toISOString()
-                    })
+                    .update(updateData)
                     .eq('id', existingData[0].id)
                     .select();
 
                 if (error) throw error;
                 result = data[0];
             } else {
-                // Insert new
+                // Insert new - include all fields for first insert
+                const insertData = {
+                    q1: answers.q1 || null,
+                    q2: answers.q2 || null,
+                    q3: answers.q3 || null,
+                    q4: answers.q4 || null,
+                    q5_feet: answers.q5_feet || null,
+                    q5_inches: answers.q5_inches || null,
+                    q6: answers.q6 || null,
+                    q7: answers.q7 || null,
+                    created_at: new Date().toISOString(),
+                    updated_at: new Date().toISOString()
+                };
+                
                 const { data, error } = await this.supabase
                     .from('correct_answers')
-                    .insert({
-                        q1: answers.q1,
-                        q2: answers.q2,
-                        q3: answers.q3,
-                        q4: answers.q4,
-                        q5_feet: answers.q5_feet,
-                        q5_inches: answers.q5_inches,
-                        q6: answers.q6,
-                        q7: answers.q7,
-                        created_at: new Date().toISOString(),
-                        updated_at: new Date().toISOString()
-                    })
+                    .insert(insertData)
                     .select();
 
                 if (error) throw error;
