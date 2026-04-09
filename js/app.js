@@ -6,12 +6,23 @@ let currentQuestionIndex = 1;
 
 // Initialize app
 async function initApp() {
+    // Ensure all screens start hidden
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(screen => screen.classList.add('hidden'));
+    
     // Show registration screen by default
     showScreen('registrationScreen');
     
     // Set up event listeners
     document.getElementById('registrationForm').addEventListener('submit', handleRegistration);
     document.getElementById('questionsForm').addEventListener('submit', handleSubmit);
+}
+
+// Initialize when page loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
 }
 
 // Show/hide screens

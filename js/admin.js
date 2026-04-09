@@ -3,6 +3,10 @@
 let isLoggedIn = false;
 
 async function initAdmin() {
+    // Ensure all screens start hidden
+    const screens = document.querySelectorAll('.screen');
+    screens.forEach(screen => screen.classList.add('hidden'));
+    
     document.getElementById('loginForm').addEventListener('submit', handleLogin);
     document.getElementById('answersForm').addEventListener('submit', handleSaveAnswers);
     
@@ -11,6 +15,9 @@ async function initAdmin() {
         isLoggedIn = true;
         showAdminDashboard();
         await loadAdminData();
+    } else {
+        // Show login screen
+        document.getElementById('loginScreen').classList.remove('hidden');
     }
 }
 
