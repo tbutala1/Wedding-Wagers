@@ -285,8 +285,7 @@ class Database {
             const { data, error } = await this.supabase
                 .from('responses')
                 .select('first_name, last_name, score, correct_count, submitted_at')
-                .not('score', 'is', null)
-                .order('score', { ascending: false })
+                .order('score', { ascending: false, nullsLast: true })
                 .order('submitted_at', { ascending: true });
 
             if (error) throw error;

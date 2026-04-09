@@ -35,15 +35,18 @@ async function loadLeaderboard() {
         noScoresMsg.classList.add('hidden');
         
         // Populate table
-        tbody.innerHTML = leaderboard.map((entry, index) => `
-            <tr>
-                <td>${index + 1}</td>
-                <td>${entry.first_name} ${entry.last_name}</td>
-                <td>${entry.correct_count !== null && entry.correct_count !== undefined ? entry.correct_count : '—'}</td>
-                <td>${entry.score !== null ? entry.score + '%' : '—'}</td>
-                <td>${entry.score !== null ? '✓ Graded' : '⏳ Pending'}</td>
-            </tr>
-        `).join('');
+        tbody.innerHTML = leaderboard.map((entry, index) => {
+            const isScored = entry.score !== null && entry.score !== undefined;
+            return `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${entry.first_name} ${entry.last_name}</td>
+                    <td>${isScored ? entry.correct_count : '—'}</td>
+                    <td>${isScored ? entry.score + '%' : '—'}</td>
+                    <td>${isScored ? '✓ Graded' : '⏳ Pending'}</td>
+                </tr>
+            `;
+        }).join('');
         
     } catch (error) {
         showLoading(false);
