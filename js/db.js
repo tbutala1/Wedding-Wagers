@@ -9,11 +9,16 @@
 class Database {
     constructor() {
         this.supabase = supabaseClient;
+        // Log connection info for debugging
+        console.log('Database initialized with:');
+        console.log('- Supabase URL:', SUPABASE_URL);
+        console.log('- Has API Key:', !!SUPABASE_ANON_KEY);
     }
 
     // Check if user already exists
     async userExists(firstName, lastName) {
         try {
+            console.log(`Checking if user ${firstName} ${lastName} exists...`);
             const { data, error } = await this.supabase
                 .from('responses')
                 .select('id')
@@ -21,10 +26,22 @@ class Database {
                 .eq('last_name', lastName)
                 .limit(1);
 
-            if (error) throw error;
+            if (error) {
+                console.error('Supabase error:', error);
+                throw error;
+            }
+            console.log(`Query successful. Found: ${data && data.length > 0 ? 'yes' : 'no'}`);
             return data && data.length > 0;
         } catch (error) {
             console.error('Error checking user:', error);
+            // Provide more detailed error info
+            if (error.message?.includes('Failed to fetch')) {
+                console.error('Network/CORS Error - Check:');
+                console.error('1. Is Supabase URL correct?', SUPABASE_URL);
+                console.error('2. Is API key valid?');
+                console.error('3. Are you online?');
+                console.error('4. Check browser Network tab for CORS errors');
+            }
             throw error;
         }
     }

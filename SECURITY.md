@@ -10,18 +10,28 @@ Since your API key was exposed on GitHub, you MUST regenerate it:
 2. Select your project → Settings → API
 3. Find "Anon Public" key → Click the menu → **"Rotate key"**
 4. Copy your **new** Anon Key (the old one is now invalid)
-5. Follow the setup instructions below with the new key
+5. Follow the Netlify setup below with the new key
 
 ---
 
-## Setup for Netlify (Production)
+## Setup for Netlify (Your Current Platform) ✅
 
-### Step 1: Set Environment Variables in Netlify
+### Step 1: Set Build Command
 
-1. Go to your Netlify site dashboard
-2. Click **Site settings** → **Build & Deploy** → **Environment**
-3. Click **Add environment variable**
-4. Add these three variables:
+First, tell Netlify to use a build process so environment variables get injected:
+
+1. Go to your **Netlify site dashboard**
+2. Click **Site settings** → **Build & Deploy** → **Build command**
+3. Set build command to:
+   ```bash
+   echo "Build: Environment variables will be injected"
+   ```
+4. Click **Save**
+
+### Step 2: Set Environment Variables in Netlify
+
+1. In Netlify dashboard, go to **Site settings** → **Build & Deploy** → **Environment**
+2. Click **Add environment variable** and add these three:
 
    | Key | Value |
    |---|---|
@@ -29,20 +39,23 @@ Since your API key was exposed on GitHub, you MUST regenerate it:
    | `SUPABASE_ANON_KEY` | Your new regenerated Anon Key |
    | `ADMIN_PASSWORD` | Your secure password for admin access |
 
-5. **Redeploy** your site (Go to Deploys → Trigger Deploy)
+3. **Redeploy** your site:
+   - Go to **Deploys** → **Trigger Deploy**
+   - Wait for it to complete (usually 30-60 seconds)
 
-### Step 2: Verify It Works
+### Step 3: Verify It Works
 
-- Visit your live site at `https://tbutala1.github.io/Wedding-Wagers`
+- Visit your live Netlify URL (e.g., `https://your-site.netlify.app`)
 - Open browser console (F12)
-- You should NOT see the warning about missing configuration
+- Look for messages starting with "✓ Config loaded"
 - Try registering a name - data should save to Supabase
+- If you see warnings, check Step 2 again
 
 ---
 
 ## Setup for Local Development
 
-### Option A: Using `.env.local` File (Recommended)
+### With Build Tool (Recommended)
 
 1. **Create `.env.local`** in your project root:
    ```bash
@@ -56,27 +69,27 @@ Since your API key was exposed on GitHub, you MUST regenerate it:
    ADMIN_PASSWORD=YourSecurePassword123
    ```
 
-3. **Start local server**:
+3. **Install Node dependencies** (if not already):
    ```bash
-   cd /path/to/Wedding-Wagers
-   python -m http.server 8000
+   npm install dotenv
    ```
 
-4. **Visit** `http://localhost:8000`
+4. **Build and start locally**:
+   ```bash
+   npm run build  # or your build script
+   npm start
+   ```
 
-**Note:** `.env.local` is in `.gitignore` - it will NEVER be committed to GitHub ✅
+### Quick Testing (Browser Console)
 
-### Option B: Using Browser Console
-
-For quick testing:
+For immediate testing without build tools:
 ```javascript
-// Paste in browser console (F12)
+// Paste in browser console (F12) on your local server
 localStorage.setItem('wedding-wagers-config', JSON.stringify({
   SUPABASE_URL: 'https://YOUR_PROJECT_ID.supabase.co',
-  SUPABASE_ANON_KEY: 'YOUR_KEY',
+  SUPABASE_ANON_KEY: 'YOUR_NEW_KEY_HERE',
   ADMIN_PASSWORD: 'YOUR_PASSWORD'
 }));
-// Reload page
 location.reload();
 ```
 
@@ -85,20 +98,21 @@ location.reload();
 ## How It Works
 
 ### 1. **config-injector.js** (runs first)
-- Loads environment variables into `window.__CONFIG__`
-- For Netlify: reads from process.env (set via dashboard)
-- For local: reads from localStorage or .env.local (via build tool)
+- For Netlify: Checks if env vars are in window (injected by build)
+- For local: Reads from `.env.local` via build tool
+- Fallback: Reads from browser localStorage
 
 ### 2. **config.js** (runs next)
-- Reads from `window.__CONFIG__`
+- Reads credentials from `window.__CONFIG__`
 - Falls back to placeholder values if not set
-- Logs warning if credentials missing
+- Logs warnings if credentials are missing
 
-### 3. **Security**
-- Credentials never committed to GitHub
-- `.gitignore` prevents accidental commits
-- Each deployment gets fresh credentials from environment
-- Easy to rotate keys without code changes
+### 3. **Security Benefits**
+- ✅ Credentials never committed to GitHub
+- ✅ `.gitignore` prevents accidental commits
+- ✅ Different credentials per environment
+- ✅ Easy to rotate keys without code changes
+- ✅ Netlify stores secrets securely
 
 ---
 
@@ -108,40 +122,46 @@ location.reload();
 |---|---|---|
 | `.env.example` | Template showing required variables | ✅ Yes |
 | `.env.local` | Your actual credentials (local dev) | ❌ Never |
-| `.gitignore` | Tells Git to ignore .env files | ✅ Yes |
+| `.gitignore` | Prevents committing secrets | ✅ Yes |
 | `config-injector.js` | Loads environment variables | ✅ Yes |
-| `config.js` | Reads from injector | ✅ Yes (no secrets) |
+| `config.js` | Reads injected credentials | ✅ Yes (no secrets) |
 | `*.html` | Includes config-injector script | ✅ Yes |
 
 ---
 
 ## Troubleshooting
 
-### "Supabase credentials not configured" warning
+### "CONFIGURATION INCOMPLETE!" warning in console
 
-**Solution:** You haven't set environment variables yet. Follow setup steps above.
+**Solution:** Netlify environment variables not set. Check:
+1. Are you logged into Netlify dashboard?
+2. Did you add all 3 environment variables?
+3. Did you trigger a redeploy after adding variables?
+4. Did you wait for deploy to complete?
 
-### Changes don't apply
+### "Failed to fetch" error when submitting form
 
-**Solution:** After changing Netlify env vars:
-1. Go to Netlify → Deploys
-2. Click "Trigger Deploy" to force redeployment
-3. Wait 30-60 seconds
-4. Hard refresh site (Ctrl+Shift+R)
+**Solution:** 
+1. Check browser console for exact error (F12)
+2. Verify Supabase URL format: `https://xxxxx.supabase.co` (must include https://)
+3. Verify API key is your NEW rotated key (old one won't work)
+4. Check Supabase tables exist (see your Supabase dashboard)
 
-### Still seeing old credentials
+### Deploy succeeded but still old config
 
 **Solution:**
 1. Clear browser cache (Ctrl+Shift+Delete)
 2. Hard refresh (Ctrl+Shift+R)
-3. Check it was actually redeployed on Netlify
+3. Go back to Netlify → Deploys
+4. Confirm latest deploy shows "Published" status
 
-### API returns 401/403 errors
+### Need to update credentials later
 
-**Likely cause:** Using old API key. You must regenerate it FIRST before this works:
-1. Check Supabase → Settings → API for your current key
-2. Regenerate if you haven't
-3. Update Netlify environment variables
+**Solution:**
+1. Go to Netlify → Site settings → Environment
+2. Click the variable → Edit → Update value
+3. Click "Trigger Deploy" in Deploys tab
+4. New credentials will be used after deploy completes
 
 ---
 
@@ -149,24 +169,45 @@ location.reload();
 
 ✅ **Do:**
 - Rotate API keys if ever exposed
-- Use different passwords for admin vs production
-- Keep `.env.local` secure and never share
-- Review environment variables in Netlify periodically
+- Use different passwords for different environments
+- Keep `.env.local` secure locally
+- Review environment variables in Netlify monthly
 
 ❌ **Don't:**
 - Commit `.env` files to GitHub
-- Share API keys via email/chat
-- Push credentials without env vars setup
-- Use same password for admin in production
+- Share API keys via email or chat
+- Use same password everywhere
+- Leave old/unused API keys active
+
+---
+
+## Netlify Specifics
+
+### Why We Add a Build Command
+
+Even though your site is static, Netlify needs a build process to:
+- Inject environment variables into the runtime
+- Process the site configuration
+- Enables other features like redirects, functions, etc.
+
+The simple build command we set ensures this happens.
+
+### View Netlify Build Logs
+
+1. Go to **Deploys** in Netlify
+2. Click on a deploy
+3. Scroll to see build logs
+4. Verify "Environment variables loaded" messages
 
 ---
 
 ## Need Help?
 
 1. Check [FAQ.md](FAQ.md) for common issues
-2. Review Supabase [security docs](https://supabase.com/docs/guides/api/security)
-3. Check Netlify [environment variables docs](https://docs.netlify.com/configure-builds/environment-variables/)
+2. Review Netlify [environment variables docs](https://docs.netlify.com/configure-builds/environment-variables/)
+3. Check Supabase [security docs](https://supabase.com/docs/guides/api/security)
+4. Netlify support: https://support.netlify.com
 
 ---
 
-**Your site is now secure!** 🔒
+**Your Netlify site is now secure!** 🔒
