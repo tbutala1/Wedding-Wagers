@@ -380,4 +380,6 @@ class Database {
 }
 
 // Create global database instance
+console.log('📚 Creating Database instance...');
 const db = new Database();
+console.log('✓ Database instance created');

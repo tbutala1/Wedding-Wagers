@@ -4,17 +4,27 @@ let refreshInterval;
 
 // Wait for db to be available
 async function waitForDatabase() {
+    console.log('Waiting for database to initialize...');
     let attempts = 0;
-    while (typeof db === 'undefined' && attempts < 10) {
+    const maxAttempts = 50; // Wait up to 5 seconds (50 * 100ms)
+    
+    while (typeof db === 'undefined' && attempts < maxAttempts) {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
+        if (attempts % 10 === 0) {
+            console.log(`Still waiting for db... (${attempts * 100}ms)`);
+        }
     }
     
     if (typeof db === 'undefined') {
-        console.error('Database failed to initialize');
+        console.error('Database failed to initialize after 5 seconds');
+        console.error('Check if config.js and db.js loaded correctly');
+        console.error('window.__CONFIG__:', window.__CONFIG__);
         alert('Error: Database failed to initialize. Please refresh the page.');
         return false;
     }
+    
+    console.log('✓ Database initialized successfully');
     return true;
 }
 
