@@ -83,8 +83,75 @@ class Database {
         }
     }
 
-    // Delete a response (for admin testing)
-    async deleteResponse(id) {
+    // Calculate correct count for a response
+    calculateCorrectCount(responseAnswers, correctAnswers) {
+        if (!responseAnswers || !correctAnswers) return 0;
+        
+        let correctCount = 0;
+
+        // Q1: Yes/No - only check if admin has provided answer
+        if (correctAnswers.q1 !== null && correctAnswers.q1 !== undefined) {
+            if (responseAnswers.q1 === correctAnswers.q1) correctCount++;
+        }
+
+        // Q2: Yes/No
+        if (correctAnswers.q2 !== null && correctAnswers.q2 !== undefined) {
+            if (responseAnswers.q2 === correctAnswers.q2) correctCount++;
+        }
+
+        // Q3: Neckline
+        if (correctAnswers.q3 !== null && correctAnswers.q3 !== undefined) {
+            if (responseAnswers.q3 === correctAnswers.q3) correctCount++;
+        }
+
+        // Q4: Duration
+        if (correctAnswers.q4 !== null && correctAnswers.q4 !== undefined) {
+            if (responseAnswers.q4 === correctAnswers.q4) correctCount++;
+        }
+
+        // Q5: Height (allow 1 inch tolerance)
+        if (correctAnswers.q5_feet !== null && correctAnswers.q5_feet !== undefined &&
+            correctAnswers.q5_inches !== null && correctAnswers.q5_inches !== undefined) {
+            const userHeightInches = responseAnswers.q5_feet * 12 + responseAnswers.q5_inches;
+            const correctHeightInches = correctAnswers.q5_feet * 12 + correctAnswers.q5_inches;
+            if (Math.abs(userHeightInches - correctHeightInches) <= 1) correctCount++;
+        }
+
+        // Q6: Duration
+        if (correctAnswers.q6 !== null && correctAnswers.q6 !== undefined) {
+            if (responseAnswers.q6 === correctAnswers.q6) correctCount++;
+        }
+
+        // Q7: Mentions (allow within 2)
+        if (correctAnswers.q7 !== null && correctAnswers.q7 !== undefined) {
+            if (Math.abs(responseAnswers.q7 - correctAnswers.q7) <= 2) correctCount++;
+        }
+
+        return correctCount;
+    }
+
+    // Get leaderboard with correct count calculated
+    async getLeaderboardWithCorrectCount() {
+        try {
+            const correctAnswers = await this.getCorrectAnswers();
+            
+            const { data, error } = await this.supabase
+                .from('responses')
+                .select('first_name, last_name, score, answers, submitted_at')
+                .order('score', { ascending: false, nullsLast: true })
+                .order('submitted_at', { ascending: true });
+
+            if (error) throw error;
+            
+            // Calculate correct count for each entry
+            const leaderboardWithCounts = (data || []).map(entry => ({
+                ...entry,
+                correct_count: correctAnswers ? this.calculateCorrectCount(entry.answers, correctAnswers) : 0
+            }));
+            
+            return leaderboardWithCounts;
+        } catch (error) {
+            console.error('Error fetching leaderboard:', error);
         try {
             const { error } = await this.supabase
                 .from('responses')
