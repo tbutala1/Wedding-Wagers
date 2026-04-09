@@ -170,11 +170,12 @@ function showLoading(show) {
 
 // Update progress bar
 function updateProgress() {
-    // Show full progress since all questions are visible at once
-    const percentage = 100;
-    document.getElementById('progressFill').style.width = percentage + '%';
-    document.getElementById('currentQuestion').textContent = QUESTIONS;
-    document.getElementById('totalQuestions').textContent = QUESTIONS;
+    const progressFill = document.getElementById('progressFill');
+    if (progressFill) {
+        // Show full progress since all questions are visible at once
+        const percentage = 100;
+        progressFill.style.width = percentage + '%';
+    }
 }
 
 // Initialize when DOM is ready
