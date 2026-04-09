@@ -277,8 +277,7 @@ class Database {
                 const { error } = await this.supabase
                     .from('responses')
                     .update({ 
-                        score: response.score,
-                        correct_count: response.correct_count
+                        score: response.score
                     })
                     .eq('id', response.id);
                 
@@ -300,7 +299,7 @@ class Database {
         try {
             const { data, error } = await this.supabase
                 .from('responses')
-                .select('first_name, last_name, score, correct_count, submitted_at')
+                .select('first_name, last_name, score, submitted_at')
                 .order('score', { ascending: false, nullsLast: true })
                 .order('submitted_at', { ascending: true });
 
