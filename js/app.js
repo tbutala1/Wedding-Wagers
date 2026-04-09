@@ -73,24 +73,44 @@ async function handleSubmit(e) {
     try {
         showLoading(true);
         
-        // Collect answers
-        const answers = {
-            q1: document.querySelector('input[name="q1"]:checked')?.value,
-            q2: document.querySelector('input[name="q2"]:checked')?.value,
-            q3: document.querySelector('input[name="q3"]:checked')?.value,
-            q4: document.querySelector('input[name="q4"]:checked')?.value,
-            q5_feet: parseInt(document.getElementById('heightFeet').value),
-            q5_inches: parseInt(document.getElementById('heightInches').value),
-            q6: document.querySelector('input[name="q6"]:checked')?.value,
-            q7: parseInt(document.getElementById('stevieMentions').value)
-        };
+        // Collect answers - validate each one
+        const q1 = document.querySelector('input[name="q1"]:checked')?.value;
+        const q2 = document.querySelector('input[name="q2"]:checked')?.value;
+        const q3 = document.querySelector('input[name="q3"]:checked')?.value;
+        const q4 = document.querySelector('input[name="q4"]:checked')?.value;
+        const q5_feet = document.getElementById('heightFeet').value;
+        const q5_inches = document.getElementById('heightInches').value;
+        const q6 = document.querySelector('input[name="q6"]:checked')?.value;
+        const q7 = document.getElementById('stevieMentions').value;
         
-        // Validate all questions answered
-        if (!Object.values(answers).every(val => val !== null && val !== undefined && val !== '' && !isNaN(val))) {
+        // Validate all required fields are filled
+        if (!q1 || !q2 || !q3 || !q4 || !q5_feet || !q5_inches || !q6 || !q7) {
             alert('Please answer all questions before submitting');
             showLoading(false);
             return;
         }
+        
+        // Validate numeric inputs
+        const heightFeet = parseInt(q5_feet);
+        const heightInches = parseInt(q5_inches);
+        const mentions = parseInt(q7);
+        
+        if (isNaN(heightFeet) || isNaN(heightInches) || isNaN(mentions)) {
+            alert('Please enter valid numbers for height and mentions');
+            showLoading(false);
+            return;
+        }
+        
+        const answers = {
+            q1: q1,
+            q2: q2,
+            q3: q3,
+            q4: q4,
+            q5_feet: heightFeet,
+            q5_inches: heightInches,
+            q6: q6,
+            q7: mentions
+        };
         
         // Submit to database
         const response = await db.submitResponse(currentUser.firstName, currentUser.lastName, answers);
