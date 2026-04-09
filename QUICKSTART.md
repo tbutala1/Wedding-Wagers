@@ -1,33 +1,40 @@
-# Quick Start Guide
+# Quick Start Guide - Netlify Deployment
 
-## 5-Minute Setup
+## ⚡ 10-Minute Setup
 
 ### Step 1: Create Supabase Project (2 min)
 - Visit https://supabase.com/dashboard
-- Click "New Project"
+- Click "New Project" 
 - Enter project details and wait for creation
+- Go to **Settings → API** and copy:
+  - Project URL
+  - Anon Public Key
 
-### Step 2: Create Tables (2 min)
-- Go to SQL Editor
-- Copy-paste the SQL from README.md "Create Database Tables" section
+### Step 2: Create Database Tables (2 min)
+- In Supabase, go to **SQL Editor**
+- Copy-paste the SQL from [README.md](README.md) → "Create Database Tables" section
 - Run both queries
 
-### Step 3: Update Config (1 min)
-- Open `js/config.js`
-- Paste your Supabase URL and Key
-- Set a strong admin password
+### Step 3: Set Netlify Environment Variables (2 min)
+- Go to your Netlify site dashboard
+- Navigate to **Site settings → Build & deploy → Environment**
+- Click **Add environment variable** for each:
+  - `SUPABASE_URL`: `https://YOUR_PROJECT_ID.supabase.co`
+  - `SUPABASE_ANON_KEY`: Your Anon Public Key from Supabase
+  - `ADMIN_PASSWORD`: Create a strong password
 
-### Step 4: Test Locally
-```bash
-cd wedding-game
-python -m http.server 8000
-```
-Visit http://localhost:8000
+### Step 4: Redeploy Site (2 min)
+- Go to **Deploys** tab
+- Click **Trigger deploy → Deploy site**
+- Wait for "Published" status
 
-### Step 5: Deploy
-- Push to GitHub
-- Connect to Netlify
-- Done! Share the URL with guests
+### Step 5: Verify & Test (2 min)
+- Visit your Netlify URL
+- Open browser console (F12)
+- Look for: `✓ Config loaded from Netlify build`
+- Try registering a name - should save to Supabase
+- Go to `/admin.html` → login with your password
+- Enter correct answers to enable scoring
 
 ## Testing Checklist
 
@@ -115,16 +122,33 @@ For each user response:
 
 ## Deployment Checklist
 
-- [ ] Config.js updated with credentials
-- [ ] Tables created in Supabase
-- [ ] RLS (Row Level Security) disabled on tables (for this version)
-- [ ] Admin password set and secured
-- [ ] Code pushed to GitHub
-- [ ] Site deployed to Netlify or GitHub Pages
-- [ ] QR code generated and tested
-- [ ] Mobile responsiveness tested
-- [ ] Admin access tested
-- [ ] One test entry submitted and scored
+- [ ] Supabase project created and tables set up
+- [ ] All 3 environment variables set in Netlify
+- [ ] Site redeployed after adding variables (Trigger deploy)
+- [ ] Browser console shows "Config loaded"
+- [ ] Test registration works and data appears in Supabase
+- [ ] Admin login works (`/admin.html`)
+- [ ] Correct answers entered by admin
+- [ ] Leaderboard scoring working
+- [ ] QR code generated and tested on mobile
+- [ ] Mock submissions tested end-to-end
+
+## Netlify Build Process
+
+The site automatically:
+1. Reads environment variables from Netlify dashboard
+2. Runs `scripts/inject-env.js` during build
+3. Creates `js/config-env.js` with injected values
+4. Deploys the site with credentials embedded (securely)
+
+👉 **DO NOT:** Edit `js/config-env.js` manually (it's auto-generated)
+
+👉 **DO:**
+1. Set environment variables in Netlify dashboard
+2. Click "Trigger deploy" after any changes
+3. Check build logs if something fails
+
+---
 
 ## Support URLs
 

@@ -1,0 +1,58 @@
+# Netlify configuration for Wedding Wagers static site
+
+[build]
+# Command to inject environment variables before deployment
+command = "node scripts/inject-env.js"
+# Publish static files (they're already in root)
+publish = "."
+
+# Environment variables available during build and functions
+[build.environment]
+# Configure build context
+NODE_VERSION = "18"
+
+# Redirect single page app routes to index.html
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200
+force = false
+conditions = { JustFiles = false }
+
+# Allow setup.html, admin.html, leaderboard.html as direct routes
+[[redirects]]
+from = "/setup.html"
+to = "/setup.html"
+status = 200
+
+[[redirects]]
+from = "/admin.html"
+to = "/admin.html"
+status = 200
+
+[[redirects]]
+from = "/leaderboard.html"
+to = "/leaderboard.html"
+status = 200
+
+# Cache policy
+[build.processing]
+skip_processing = false
+
+[[headers]]
+for = "/*.html"
+
+[headers.values]
+Cache-Control = "public, max-age=3600"
+
+[[headers]]
+for = "/*.js"
+
+[headers.values]
+Cache-Control = "public, max-age=3600"
+
+[[headers]]
+for = "/*.css"
+
+[headers.values]
+Cache-Control = "public, max-age=604800"
