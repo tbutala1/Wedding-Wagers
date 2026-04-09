@@ -1,7 +1,5 @@
 // Leaderboard functionality
 
-let refreshInterval;
-
 // Wait for db to be available
 async function waitForDatabase() {
     console.log('Waiting for database to initialize...');
@@ -38,9 +36,6 @@ async function initLeaderboard() {
     
     // Refresh button
     document.getElementById('refreshBtn').addEventListener('click', loadLeaderboard);
-    
-    // Auto-refresh every 10 seconds
-    refreshInterval = setInterval(loadLeaderboard, 10000);
 }
 
 async function loadLeaderboard() {
@@ -82,7 +77,6 @@ async function loadLeaderboard() {
                     <td>${index + 1}</td>
                     <td>${entry.first_name} ${entry.last_name}</td>
                     <td>${isScored ? entry.correct_count + '/7' : '—'}</td>
-                    <td>${isScored ? '✓ Graded' : '⏳ Pending'}</td>
                 </tr>
             `;
         }).join('');
@@ -108,8 +102,3 @@ if (document.readyState === 'loading') {
 } else {
     initLeaderboard();
 }
-
-// Cleanup on page unload
-window.addEventListener('beforeunload', () => {
-    if (refreshInterval) clearInterval(refreshInterval);
-});
