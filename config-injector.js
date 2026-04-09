@@ -1,68 +1,60 @@
 /**
- * Config Injector - Loads environment variables into window.__CONFIG__
- * This file is used to inject sensitive configuration
+ * Config Injector - Loads configuration into window.__CONFIG__
  * 
- * For GitHub Pages: Set via browser localStorage (see instructions below)
- * For Netlify: Environment variables work if build command is set
- * For Local Dev: Uses .env.local (loaded via build tool or manual setup)
+ * For Netlify Static Sites: Configuration is stored in localStorage
  * 
- * TO SET UP:
- * 1. For local testing, create .env.local in project root
- * 2. For GitHub Pages, use browser console to set:
- *    localStorage.setItem('wedding-wagers-config', JSON.stringify({
- *      SUPABASE_URL: 'https://xxx.supabase.co',
- *      SUPABASE_ANON_KEY: 'your_key',
- *      ADMIN_PASSWORD: 'your_password'
- *    }));
- *    location.reload();
- * 3. For Netlify, set environment variables in dashboard
+ * SETUP INSTRUCTIONS:
+ * First time setup - paste in browser console (F12):
+ * 
+ * localStorage.setItem('wedding-wagers-config', JSON.stringify({
+ *   SUPABASE_URL: 'https://YOUR_PROJECT_ID.supabase.co',
+ *   SUPABASE_ANON_KEY: 'YOUR_ANON_KEY',
+ *   ADMIN_PASSWORD: 'YOUR_PASSWORD'
+ * }));
+ * location.reload();
  */
 
 // Initialize config object
 window.__CONFIG__ = window.__CONFIG__ || {};
 
-// Try to load from localStorage first (works everywhere)
-const localConfig = localStorage.getItem('wedding-wagers-config');
-if (localConfig) {
+// Load from localStorage (primary source for static sites)
+const savedConfig = localStorage.getItem('wedding-wagers-config');
+if (savedConfig) {
   try {
-    const parsedConfig = JSON.parse(localConfig);
-    window.__CONFIG__ = { ...window.__CONFIG__, ...parsedConfig };
+    const config = JSON.parse(savedConfig);
+    window.__CONFIG__ = { ...window.__CONFIG__, ...config };
     console.log('✓ Config loaded from localStorage');
   } catch (e) {
-    console.error('⚠️ Failed to parse config from localStorage:', e);
+    console.error('⚠️ Failed to parse stored config:', e);
   }
 }
 
-// Try to load from Netlify environment variables (if available)
-// Note: This requires a build command in Netlify
-if (typeof window !== 'undefined') {
-  // Check if this is a Netlify build with injected env vars
-  if (window.ENV_SUPABASE_URL) {
-    window.__CONFIG__.SUPABASE_URL = window.ENV_SUPABASE_URL;
-    window.__CONFIG__.SUPABASE_ANON_KEY = window.ENV_SUPABASE_ANON_KEY;
-    window.__CONFIG__.ADMIN_PASSWORD = window.ENV_ADMIN_PASSWORD;
-    console.log('✓ Config loaded from Netlify environment');
-  }
-}
-
-// Log status (for debugging)
+// Log configuration status
 console.group('Wedding Wagers Configuration Status');
-const hasAll = window.__CONFIG__.SUPABASE_URL && 
-               window.__CONFIG__.SUPABASE_ANON_KEY && 
-               window.__CONFIG__.ADMIN_PASSWORD;
+const hasURL = !!window.__CONFIG__.SUPABASE_URL;
+const hasKey = !!window.__CONFIG__.SUPABASE_ANON_KEY;
+const hasPassword = !!window.__CONFIG__.ADMIN_PASSWORD;
+const isConfigured = hasURL && hasKey && hasPassword;
 
-console.log('Has SUPABASE_URL:', !!window.__CONFIG__.SUPABASE_URL);
-console.log('Has SUPABASE_ANON_KEY:', !!window.__CONFIG__.SUPABASE_ANON_KEY);
-console.log('Has ADMIN_PASSWORD:', !!window.__CONFIG__.ADMIN_PASSWORD);
-console.log('All configured:', hasAll);
+console.log('✓ SUPABASE_URL:', hasURL ? '✓ Set' : '✗ Missing');
+console.log('✓ SUPABASE_ANON_KEY:', hasKey ? '✓ Set' : '✗ Missing');
+console.log('✓ ADMIN_PASSWORD:', hasPassword ? '✓ Set' : '✗ Missing');
+console.log('Status:', isConfigured ? '✅ Ready to use' : '❌ Incomplete - see instructions below');
 console.groupEnd();
 
-if (!hasAll) {
-  console.error('⚠️ CONFIGURATION INCOMPLETE!');
-  console.error('For GitHub Pages: Set config in browser console:');
+if (!isConfigured) {
+  console.error('═══════════════════════════════════════════════════════════');
+  console.error('⚠️  SETUP REQUIRED - Configuration not found!');
+  console.error('═══════════════════════════════════════════════════════════');
+  console.error('');
+  console.error('First time setup: Paste this in console and press Enter:');
+  console.error('');
   console.error(`localStorage.setItem('wedding-wagers-config', JSON.stringify({
-  SUPABASE_URL: 'https://xxx.supabase.co',
-  SUPABASE_ANON_KEY: 'your_anon_key',
-  ADMIN_PASSWORD: 'your_password'
-})); location.reload();`);
+  SUPABASE_URL: 'https://YOUR_PROJECT_ID.supabase.co',
+  SUPABASE_ANON_KEY: 'YOUR_ANON_KEY_HERE',
+  ADMIN_PASSWORD: 'YOUR_PASSWORD_HERE'
+}));`);
+  console.error('');
+  console.error('Then refresh the page (F5 or Cmd+R)');
+  console.error('═══════════════════════════════════════════════════════════');
 }
