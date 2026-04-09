@@ -2,7 +2,27 @@
 
 let refreshInterval;
 
+// Wait for db to be available
+async function waitForDatabase() {
+    let attempts = 0;
+    while (typeof db === 'undefined' && attempts < 10) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+    }
+    
+    if (typeof db === 'undefined') {
+        console.error('Database failed to initialize');
+        alert('Error: Database failed to initialize. Please refresh the page.');
+        return false;
+    }
+    return true;
+}
+
 async function initLeaderboard() {
+    // Wait for database to be ready
+    const dbReady = await waitForDatabase();
+    if (!dbReady) return;
+    
     // Initial load
     await loadLeaderboard();
     
@@ -15,6 +35,11 @@ async function initLeaderboard() {
 
 async function loadLeaderboard() {
     try {
+        if (typeof db === 'undefined') {
+            console.error('Database not initialized yet');
+            return;
+        }
+        
         showLoading(true);
         
         console.log('Loading leaderboard...');
