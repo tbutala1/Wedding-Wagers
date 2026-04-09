@@ -71,8 +71,6 @@ async function handleSubmit(e) {
     e.preventDefault();
     
     try {
-        showLoading(true);
-        
         // Collect answers - validate each one
         const q1 = document.querySelector('input[name="q1"]:checked')?.value;
         const q2 = document.querySelector('input[name="q2"]:checked')?.value;
@@ -83,12 +81,28 @@ async function handleSubmit(e) {
         const q6 = document.querySelector('input[name="q6"]:checked')?.value;
         const q7 = document.getElementById('stevieMentions').value;
         
+        // Debug log
+        console.log('Form submission - collected values:', {
+            q1, q2, q3, q4, q5_feet, q5_inches, q6, q7
+        });
+        
         // Validate all required fields are filled
         if (!q1 || !q2 || !q3 || !q4 || !q5_feet || !q5_inches || !q6 || !q7) {
+            console.log('Validation failed - missing fields:', {
+                q1: !q1 ? 'MISSING' : 'ok',
+                q2: !q2 ? 'MISSING' : 'ok',
+                q3: !q3 ? 'MISSING' : 'ok',
+                q4: !q4 ? 'MISSING' : 'ok',
+                q5_feet: !q5_feet ? 'MISSING' : 'ok',
+                q5_inches: !q5_inches ? 'MISSING' : 'ok',
+                q6: !q6 ? 'MISSING' : 'ok',
+                q7: !q7 ? 'MISSING' : 'ok'
+            });
             alert('Please answer all questions before submitting');
-            showLoading(false);
             return;
         }
+        
+        showLoading(true);
         
         // Validate numeric inputs
         const heightFeet = parseInt(q5_feet);
@@ -112,6 +126,8 @@ async function handleSubmit(e) {
             q7: mentions
         };
         
+        console.log('All validation passed, submitting:', answers);
+        
         // Submit to database
         const response = await db.submitResponse(currentUser.firstName, currentUser.lastName, answers);
         
@@ -126,6 +142,7 @@ async function handleSubmit(e) {
         
     } catch (error) {
         showLoading(false);
+        console.error('Submission error:', error);
         alert('Error submitting predictions: ' + error.message);
     }
 }
