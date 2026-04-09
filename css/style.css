@@ -106,10 +106,6 @@ h2 {
 /* Questions */
 .question-container {
     margin-bottom: 30px;
-    display: none;
-}
-
-.question-container.active {
     display: block;
     animation: slideIn 0.3s ease;
 }
