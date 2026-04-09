@@ -120,8 +120,23 @@ function showLoading(show) {
     }
 }
 
-// Update progress bar
+// Update progress bar and show current question
 function updateProgress() {
+    // Hide all questions
+    for (let i = 1; i <= QUESTIONS; i++) {
+        const questionEl = document.getElementById(`question${i}`);
+        if (questionEl) {
+            questionEl.classList.remove('active');
+        }
+    }
+    
+    // Show current question
+    const currentQuestionEl = document.getElementById(`question${currentQuestionIndex}`);
+    if (currentQuestionEl) {
+        currentQuestionEl.classList.add('active');
+    }
+    
+    // Update progress bar
     const percentage = (currentQuestionIndex / QUESTIONS) * 100;
     document.getElementById('progressFill').style.width = percentage + '%';
     document.getElementById('currentQuestion').textContent = currentQuestionIndex;
