@@ -39,14 +39,16 @@ async function handleRegistration(e) {
     const firstName = document.getElementById('firstName').value.trim();
     const lastName = document.getElementById('lastName').value.trim();
     
-    // Clear previous errors
-    document.getElementById('firstNameError').textContent = '';
-    document.getElementById('lastNameError').textContent = '';
+    // Clear previous errors (safely)
+    const firstNameError = document.getElementById('firstNameError');
+    const lastNameError = document.getElementById('lastNameError');
+    if (firstNameError) firstNameError.textContent = '';
+    if (lastNameError) lastNameError.textContent = '';
     
     // Validation
     if (!firstName || !lastName) {
-        if (!firstName) document.getElementById('firstNameError').textContent = 'First name is required';
-        if (!lastName) document.getElementById('lastNameError').textContent = 'Last name is required';
+        if (!firstName && firstNameError) firstNameError.textContent = 'First name is required';
+        if (!lastName && lastNameError) lastNameError.textContent = 'Last name is required';
         return;
     }
     
@@ -73,7 +75,8 @@ async function handleRegistration(e) {
         
     } catch (error) {
         showLoading(false);
-        alert('Error checking name: ' + error.message);
+        console.error('Registration error:', error);
+        alert('Registration error: ' + error.message);
     }
 }
 
