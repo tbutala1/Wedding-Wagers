@@ -78,6 +78,8 @@ async function handleSaveAnswers(e) {
             q7: parseInt(document.getElementById('answer7').value) || null
         };
         
+        console.log('Admin saving answers:', answers);
+        
         // Check if at least one answer is provided
         const hasAnyAnswer = Object.values(answers).some(val => val !== null && val !== undefined && val !== '');
         if (!hasAnyAnswer) {
@@ -91,9 +93,11 @@ async function handleSaveAnswers(e) {
         console.log(`Saving ${completedCount} answers...`);
         
         await db.saveCorrectAnswers(answers);
+        console.log('Answers saved, now calculating scores...');
         
         // Recalculate scores (only for questions that are complete)
         await db.calculateScores();
+        console.log('Scores calculated');
         
         showLoading(false);
         alert(`✅ Saved! ${completedCount} question(s) answered.\nYou can update more answers later as you learn them.`);
@@ -103,6 +107,7 @@ async function handleSaveAnswers(e) {
         
     } catch (error) {
         showLoading(false);
+        console.error('Error saving answers:', error);
         alert('Error saving answers: ' + error.message);
     }
 }

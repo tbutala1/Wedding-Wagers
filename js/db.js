@@ -186,14 +186,21 @@ class Database {
     // Calculate scores for all responses
     async calculateScores() {
         try {
+            console.log('Starting calculateScores...');
             const correctAnswers = await this.getCorrectAnswers();
-            if (!correctAnswers) return [];
+            console.log('Correct answers:', correctAnswers);
+            
+            if (!correctAnswers) {
+                console.warn('No correct answers found');
+                return [];
+            }
 
             const responses = await this.getAllResponses();
+            console.log(`Found ${responses.length} responses`);
 
             const scoredResponses = responses.map(response => {
                 let correctCount = 0;
-                let totalAnswered = 0; // Only count questions admin has answered
+                let totalAnswered = 0;
 
                 // Q1: Yes/No - only check if admin has provided answer
                 if (correctAnswers.q1 !== null && correctAnswers.q1 !== undefined) {
@@ -241,8 +248,9 @@ class Database {
                 }
 
                 // Calculate score based on only answered questions
-                // If no answers provided yet, score is null
                 const score = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : null;
+                
+                console.log(`${response.first_name} ${response.last_name}: ${correctCount}/${totalAnswered} correct = ${score}%`);
 
                 return {
                     ...response,
@@ -261,17 +269,25 @@ class Database {
                 return b.score - a.score;
             });
 
+            console.log(`Updating ${scoredResponses.length} responses with scores`);
+            
             // Update scores in database
             for (const response of scoredResponses) {
-                await this.supabase
+                console.log(`Updating ${response.first_name} ${response.last_name}: score=${response.score}, correct_count=${response.correct_count}`);
+                const { error } = await this.supabase
                     .from('responses')
                     .update({ 
                         score: response.score,
                         correct_count: response.correct_count
                     })
                     .eq('id', response.id);
+                
+                if (error) {
+                    console.error(`Error updating response ${response.id}:`, error);
+                }
             }
 
+            console.log('Score calculation complete');
             return scoredResponses;
         } catch (error) {
             console.error('Error calculating scores:', error);
