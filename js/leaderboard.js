@@ -70,13 +70,12 @@ async function loadLeaderboard() {
         
         // Populate table
         tbody.innerHTML = leaderboard.map((entry, index) => {
-            const isScored = entry.score !== null && entry.score !== undefined;
-            console.log(`Entry ${index + 1}: ${entry.first_name} ${entry.last_name} - Correct: ${entry.correct_count}, Score: ${entry.score}`);
+            console.log(`Entry ${index + 1}: ${entry.first_name} ${entry.last_name} - Correct: ${entry.correct_count}`);
             return `
                 <tr>
                     <td>${index + 1}</td>
                     <td>${entry.first_name} ${entry.last_name}</td>
-                    <td>${isScored ? entry.correct_count + '/7' : '—'}</td>
+                    <td>${entry.correct_count !== undefined ? entry.correct_count + '/7' : '—'}</td>
                 </tr>
             `;
         }).join('');

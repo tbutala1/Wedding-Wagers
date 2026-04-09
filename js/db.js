@@ -138,7 +138,6 @@ class Database {
             const { data, error } = await this.supabase
                 .from('responses')
                 .select('first_name, last_name, score, answers, submitted_at')
-                .order('score', { ascending: false, nullsLast: true })
                 .order('submitted_at', { ascending: true });
 
             if (error) throw error;
@@ -148,6 +147,14 @@ class Database {
                 ...entry,
                 correct_count: correctAnswers ? this.calculateCorrectCount(entry.answers, correctAnswers) : 0
             }));
+            
+            // Sort by correct_count descending, then by submitted_at ascending
+            leaderboardWithCounts.sort((a, b) => {
+                if (b.correct_count !== a.correct_count) {
+                    return b.correct_count - a.correct_count;
+                }
+                return new Date(a.submitted_at) - new Date(b.submitted_at);
+            });
             
             return leaderboardWithCounts;
         } catch (error) {
