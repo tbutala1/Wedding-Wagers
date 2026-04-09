@@ -71,65 +71,62 @@ async function handleSubmit(e) {
     e.preventDefault();
     
     try {
-        // Collect answers - validate each one
+        // Collect answers
+        const answers = [];
+        let missingFields = [];
+        
         const q1 = document.querySelector('input[name="q1"]:checked')?.value;
         const q2 = document.querySelector('input[name="q2"]:checked')?.value;
         const q3 = document.querySelector('input[name="q3"]:checked')?.value;
         const q4 = document.querySelector('input[name="q4"]:checked')?.value;
-        const q5_feet = document.getElementById('heightFeet').value;
-        const q5_inches = document.getElementById('heightInches').value;
+        const q5_feet = document.getElementById('heightFeet')?.value;
+        const q5_inches = document.getElementById('heightInches')?.value;
         const q6 = document.querySelector('input[name="q6"]:checked')?.value;
-        const q7 = document.getElementById('stevieMentions').value;
+        const q7 = document.getElementById('stevieMentions')?.value;
         
-        // Debug log
-        console.log('Form submission - collected values:', {
-            q1, q2, q3, q4, q5_feet, q5_inches, q6, q7
-        });
+        // Log for debugging
+        console.log('Question 1 (rain):', q1 || 'MISSING');
+        console.log('Question 2 (tim cry):', q2 || 'MISSING');
+        console.log('Question 3 (neckline):', q3 || 'MISSING');
+        console.log('Question 4 (first dance):', q4 || 'MISSING');
+        console.log('Question 5a (height feet):', q5_feet || 'MISSING');
+        console.log('Question 5b (height inches):', q5_inches || 'MISSING');
+        console.log('Question 6 (best man speech):', q6 || 'MISSING');
+        console.log('Question 7 (stevie mentions):', q7 || 'MISSING');
         
-        // Validate all required fields are filled
-        if (!q1 || !q2 || !q3 || !q4 || !q5_feet || !q5_inches || !q6 || !q7) {
-            console.log('Validation failed - missing fields:', {
-                q1: !q1 ? 'MISSING' : 'ok',
-                q2: !q2 ? 'MISSING' : 'ok',
-                q3: !q3 ? 'MISSING' : 'ok',
-                q4: !q4 ? 'MISSING' : 'ok',
-                q5_feet: !q5_feet ? 'MISSING' : 'ok',
-                q5_inches: !q5_inches ? 'MISSING' : 'ok',
-                q6: !q6 ? 'MISSING' : 'ok',
-                q7: !q7 ? 'MISSING' : 'ok'
-            });
-            alert('Please answer all questions before submitting');
+        // Check each field
+        if (!q1) missingFields.push('Question 1 (rain)');
+        if (!q2) missingFields.push('Question 2 (Tim crying)');
+        if (!q3) missingFields.push('Question 3 (Neckline)');
+        if (!q4) missingFields.push('Question 4 (First dance)');
+        if (!q5_feet) missingFields.push('Question 5 (Height - feet)');
+        if (!q5_inches && q5_inches !== '0') missingFields.push('Question 5 (Height - inches)');
+        if (!q6) missingFields.push('Question 6 (Best man speech)');
+        if (!q7 && q7 !== '0') missingFields.push('Question 7 (Stevie mentions)');
+        
+        if (missingFields.length > 0) {
+            console.error('Missing fields:', missingFields);
+            alert('Please answer all questions:\n\n' + missingFields.join('\n'));
             return;
         }
         
         showLoading(true);
         
-        // Validate numeric inputs
-        const heightFeet = parseInt(q5_feet);
-        const heightInches = parseInt(q5_inches);
-        const mentions = parseInt(q7);
-        
-        if (isNaN(heightFeet) || isNaN(heightInches) || isNaN(mentions)) {
-            alert('Please enter valid numbers for height and mentions');
-            showLoading(false);
-            return;
-        }
-        
-        const answers = {
+        const submissionAnswers = {
             q1: q1,
             q2: q2,
             q3: q3,
             q4: q4,
-            q5_feet: heightFeet,
-            q5_inches: heightInches,
+            q5_feet: parseInt(q5_feet),
+            q5_inches: parseInt(q5_inches),
             q6: q6,
-            q7: mentions
+            q7: parseInt(q7)
         };
         
-        console.log('All validation passed, submitting:', answers);
+        console.log('Submitting:', submissionAnswers);
         
         // Submit to database
-        const response = await db.submitResponse(currentUser.firstName, currentUser.lastName, answers);
+        const response = await db.submitResponse(currentUser.firstName, currentUser.lastName, submissionAnswers);
         
         showLoading(false);
         
