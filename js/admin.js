@@ -190,12 +190,12 @@ async function deleteUser(id) {
 
 async function loadLeaderboardPreview() {
     try {
-        const leaderboard = await db.getLeaderboard();
+        const leaderboard = await db.getLeaderboardWithCorrectCount();
         
         const tbody = document.getElementById('adminLeaderboardBody');
         
         if (leaderboard.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center">No scored entries yet</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center">No entries yet</td></tr>';
             return;
         }
         
@@ -203,8 +203,7 @@ async function loadLeaderboardPreview() {
             <tr>
                 <td>${index + 1}</td>
                 <td>${entry.first_name} ${entry.last_name}</td>
-                <td>${entry.score !== null ? '?' : '-'}</td>
-                <td>${entry.score !== null ? entry.score + '%' : 'Pending'}</td>
+                <td>${entry.correct_count !== undefined ? entry.correct_count + '/7' : '—'}</td>
             </tr>
         `).join('');
         
