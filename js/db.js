@@ -152,6 +152,7 @@ class Database {
             return leaderboardWithCounts;
         } catch (error) {
             console.error('Error fetching leaderboard:', error);
+            return [];
         }
     }
 
