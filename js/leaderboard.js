@@ -39,9 +39,9 @@ async function loadLeaderboard() {
             <tr>
                 <td>${index + 1}</td>
                 <td>${entry.first_name} ${entry.last_name}</td>
-                <td>${entry.score !== null ? '?' : '-'}</td>
-                <td>${entry.score !== null ? entry.score + '%' : 'Pending'}</td>
-                <td>${entry.score !== null ? '✓ Graded' : '⏳ Not Graded'}</td>
+                <td>${entry.correct_count !== null && entry.correct_count !== undefined ? entry.correct_count : '—'}</td>
+                <td>${entry.score !== null ? entry.score + '%' : '—'}</td>
+                <td>${entry.score !== null ? '✓ Graded' : '⏳ Pending'}</td>
             </tr>
         `).join('');
         

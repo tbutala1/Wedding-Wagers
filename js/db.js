@@ -193,47 +193,82 @@ class Database {
 
             const scoredResponses = responses.map(response => {
                 let correctCount = 0;
+                let totalAnswered = 0; // Only count questions admin has answered
 
-                // Q1: Yes/No
-                if (response.answers.q1 === correctAnswers.q1) correctCount++;
+                // Q1: Yes/No - only check if admin has provided answer
+                if (correctAnswers.q1 !== null && correctAnswers.q1 !== undefined) {
+                    totalAnswered++;
+                    if (response.answers.q1 === correctAnswers.q1) correctCount++;
+                }
 
                 // Q2: Yes/No
-                if (response.answers.q2 === correctAnswers.q2) correctCount++;
+                if (correctAnswers.q2 !== null && correctAnswers.q2 !== undefined) {
+                    totalAnswered++;
+                    if (response.answers.q2 === correctAnswers.q2) correctCount++;
+                }
 
                 // Q3: Neckline
-                if (response.answers.q3 === correctAnswers.q3) correctCount++;
+                if (correctAnswers.q3 !== null && correctAnswers.q3 !== undefined) {
+                    totalAnswered++;
+                    if (response.answers.q3 === correctAnswers.q3) correctCount++;
+                }
 
                 // Q4: Duration
-                if (response.answers.q4 === correctAnswers.q4) correctCount++;
+                if (correctAnswers.q4 !== null && correctAnswers.q4 !== undefined) {
+                    totalAnswered++;
+                    if (response.answers.q4 === correctAnswers.q4) correctCount++;
+                }
 
                 // Q5: Height (allow 1 inch tolerance)
-                const userHeightInches = response.answers.q5_feet * 12 + response.answers.q5_inches;
-                const correctHeightInches = correctAnswers.q5_feet * 12 + correctAnswers.q5_inches;
-                if (Math.abs(userHeightInches - correctHeightInches) <= 1) correctCount++;
+                if (correctAnswers.q5_feet !== null && correctAnswers.q5_feet !== undefined &&
+                    correctAnswers.q5_inches !== null && correctAnswers.q5_inches !== undefined) {
+                    totalAnswered++;
+                    const userHeightInches = response.answers.q5_feet * 12 + response.answers.q5_inches;
+                    const correctHeightInches = correctAnswers.q5_feet * 12 + correctAnswers.q5_inches;
+                    if (Math.abs(userHeightInches - correctHeightInches) <= 1) correctCount++;
+                }
 
                 // Q6: Duration
-                if (response.answers.q6 === correctAnswers.q6) correctCount++;
+                if (correctAnswers.q6 !== null && correctAnswers.q6 !== undefined) {
+                    totalAnswered++;
+                    if (response.answers.q6 === correctAnswers.q6) correctCount++;
+                }
 
                 // Q7: Mentions (allow within 2)
-                if (Math.abs(response.answers.q7 - correctAnswers.q7) <= 2) correctCount++;
+                if (correctAnswers.q7 !== null && correctAnswers.q7 !== undefined) {
+                    totalAnswered++;
+                    if (Math.abs(response.answers.q7 - correctAnswers.q7) <= 2) correctCount++;
+                }
 
-                const score = Math.round((correctCount / 7) * 100);
+                // Calculate score based on only answered questions
+                // If no answers provided yet, score is null
+                const score = totalAnswered > 0 ? Math.round((correctCount / totalAnswered) * 100) : null;
 
                 return {
                     ...response,
                     correct_count: correctCount,
+                    total_answered: totalAnswered,
                     score: score
                 };
             });
 
             // Sort by score (descending) and update database
-            scoredResponses.sort((a, b) => b.score - a.score);
+            scoredResponses.sort((a, b) => {
+                // Handle null scores (put them at bottom)
+                if (a.score === null && b.score === null) return 0;
+                if (a.score === null) return 1;
+                if (b.score === null) return -1;
+                return b.score - a.score;
+            });
 
             // Update scores in database
             for (const response of scoredResponses) {
                 await this.supabase
                     .from('responses')
-                    .update({ score: response.score })
+                    .update({ 
+                        score: response.score,
+                        correct_count: response.correct_count
+                    })
                     .eq('id', response.id);
             }
 
@@ -249,7 +284,7 @@ class Database {
         try {
             const { data, error } = await this.supabase
                 .from('responses')
-                .select('first_name, last_name, score, submitted_at')
+                .select('first_name, last_name, score, correct_count, submitted_at')
                 .not('score', 'is', null)
                 .order('score', { ascending: false })
                 .order('submitted_at', { ascending: true });
