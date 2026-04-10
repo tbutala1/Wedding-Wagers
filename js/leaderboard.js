@@ -62,7 +62,8 @@ async function loadLeaderboard() {
         }
 
         console.log(`Displaying ${leaderboard.length} entries on leaderboard`);
-        
+        document.getElementById('leaderboardContainer').classList.remove('hidden');
+
         // Populate table
         tbody.innerHTML = leaderboard.map((entry, index) => {
             console.log(`Entry ${index + 1}: ${entry.first_name} ${entry.last_name} - Correct: ${entry.correct_count}`);
