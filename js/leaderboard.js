@@ -38,19 +38,6 @@ async function initLeaderboard() {
     document.getElementById('refreshBtn').addEventListener('click', loadLeaderboard);
 }
 
-function countGradedQuestions(correctAnswers) {
-    if (!correctAnswers) return 0;
-    let count = 0;
-    if (correctAnswers.q1 != null) count++;
-    if (correctAnswers.q2 != null) count++;
-    if (correctAnswers.q3 != null) count++;
-    if (correctAnswers.q4 != null) count++;
-    if (correctAnswers.q5_feet != null && correctAnswers.q5_inches != null) count++;
-    if (correctAnswers.q6 != null) count++;
-    if (correctAnswers.q7 != null) count++;
-    return count;
-}
-
 async function loadLeaderboard() {
     try {
         if (typeof db === 'undefined') {
@@ -61,34 +48,21 @@ async function loadLeaderboard() {
         showLoading(true);
 
         console.log('Loading leaderboard...');
-        const [leaderboard, correctAnswers] = await Promise.all([
-            db.getLeaderboardWithCorrectCount(),
-            db.getCorrectAnswers()
-        ]);
+        const leaderboard = await db.getLeaderboardWithCorrectCount();
         console.log('Leaderboard data:', leaderboard);
 
         showLoading(false);
 
         const tbody = document.getElementById('leaderboardBody');
-        const noScoresMsg = document.getElementById('noScoresMessage');
-        const gradingStatus = document.getElementById('gradingStatus');
-
-        const gradedCount = countGradedQuestions(correctAnswers);
-        if (gradingStatus) {
-            gradingStatus.textContent = `${gradedCount} of 7 questions graded so far`;
-        }
 
         if (leaderboard.length === 0) {
             console.log('No leaderboard entries found');
-            tbody.innerHTML = '';
-            document.getElementById('leaderboardContainer').classList.add('hidden');
-            noScoresMsg.classList.remove('hidden');
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center">No predictions submitted yet.</td></tr>';
             return;
         }
-        
+
         console.log(`Displaying ${leaderboard.length} entries on leaderboard`);
         document.getElementById('leaderboardContainer').classList.remove('hidden');
-        noScoresMsg.classList.add('hidden');
         
         // Populate table
         tbody.innerHTML = leaderboard.map((entry, index) => {
