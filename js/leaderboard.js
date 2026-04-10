@@ -53,16 +53,18 @@ async function loadLeaderboard() {
 
         showLoading(false);
 
+        const container = document.getElementById('leaderboardContainer');
         const tbody = document.getElementById('leaderboardBody');
+
+        container.style.display = 'block';
 
         if (leaderboard.length === 0) {
             console.log('No leaderboard entries found');
-            tbody.innerHTML = '';
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center">No results yet.</td></tr>';
             return;
         }
 
         console.log(`Displaying ${leaderboard.length} entries on leaderboard`);
-        document.getElementById('leaderboardContainer').classList.remove('hidden');
 
         // Populate table
         tbody.innerHTML = leaderboard.map((entry, index) => {
