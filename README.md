@@ -13,13 +13,13 @@ A fun interactive web-based game for wedding guests to make predictions about th
 
 ## Questions
 
-1. Will it rain on the wedding day?
-2. Will Tim cry when Amanda walks down the aisle?
-3. What will be the neckline of Amanda's dress?
-4. Will the first dance be over or under 2 minutes?
-5. What is the average height of the groomsmen? (feet and inches)
-6. Will the Best Man speech be over or under 3 minutes?
-7. How many times will Stevie be mentioned during the speeches?
+1. What will be the neckline of Amanda's dress?
+2. Will the first dance be over or under 2 minutes?
+3. How many "Stevie" mentions will there be during the speeches?
+4. What is the average height of the groomsmen? (feet and inches)
+5. How many guests named John will be in attendance?
+6. Will there be an outfit change at the reception?
+7. Which of the following will not be a signature cocktail? (Espresso Martini, Lavender French 75, Spicy Margarita, Whiskey Sour)
 
 ## Setup Instructions
 

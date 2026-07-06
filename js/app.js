@@ -4,15 +4,29 @@ let currentUser = null;
 const QUESTIONS = 7;
 let currentQuestionIndex = 1;
 
+// Submissions automatically close at 12:00 AM (midnight) Eastern Time as the
+// wedding day begins — Sept 5, 2026. September is EDT, so the offset is -04:00.
+const SUBMISSION_CUTOFF = new Date('2026-09-05T00:00:00-04:00');
+
+function submissionsClosed() {
+    return new Date() >= SUBMISSION_CUTOFF;
+}
+
 // Initialize app
 async function initApp() {
     // Ensure all screens start hidden
     const screens = document.querySelectorAll('.screen');
     screens.forEach(screen => screen.classList.add('hidden'));
     
+    // Auto-close: once the cutoff has passed, show the closed screen and stop.
+    if (submissionsClosed()) {
+        showScreen('closedScreen');
+        return;
+    }
+
     // Show registration screen by default
     showScreen('registrationScreen');
-    
+
     // Set up event listeners
     document.getElementById('registrationForm').addEventListener('submit', handleRegistration);
     document.getElementById('questionsForm').addEventListener('submit', handleSubmit);
@@ -35,7 +49,13 @@ function showScreen(screenId) {
 // Handle registration
 async function handleRegistration(e) {
     e.preventDefault();
-    
+
+    // Backstop in case the page was opened before the cutoff and left idle.
+    if (submissionsClosed()) {
+        showScreen('closedScreen');
+        return;
+    }
+
     const firstName = document.getElementById('firstName').value.trim();
     const lastName = document.getElementById('lastName').value.trim();
     
@@ -83,40 +103,47 @@ async function handleRegistration(e) {
 // Handle form submission
 async function handleSubmit(e) {
     e.preventDefault();
-    
+
+    // Backstop in case the page was opened before the cutoff and left idle.
+    if (submissionsClosed()) {
+        showScreen('closedScreen');
+        return;
+    }
+
     try {
         // Collect answers
         const answers = [];
         let missingFields = [];
         
-        const q1 = document.querySelector('input[name="q1"]:checked')?.value;
-        const q2 = document.querySelector('input[name="q2"]:checked')?.value;
-        const q3 = document.querySelector('input[name="q3"]:checked')?.value;
-        const q4 = document.querySelector('input[name="q4"]:checked')?.value;
-        const q5_feet = document.getElementById('heightFeet')?.value;
+        // Storage keys (q1..q7) differ from display order; see comments below.
+        const q3 = document.querySelector('input[name="q3"]:checked')?.value;   // Q1: neckline
+        const q4 = document.querySelector('input[name="q4"]:checked')?.value;   // Q2: first dance
+        const q7 = document.getElementById('stevieMentions')?.value;            // Q3: Stevie mentions
+        const q5_feet = document.getElementById('heightFeet')?.value;           // Q4: groomsmen height
         const q5_inches = document.getElementById('heightInches')?.value;
-        const q6 = document.querySelector('input[name="q6"]:checked')?.value;
-        const q7 = document.getElementById('stevieMentions')?.value;
-        
+        const q2 = document.getElementById('johnCount')?.value;                 // Q5: guests named John
+        const q1 = document.querySelector('input[name="q1"]:checked')?.value;   // Q6: outfit change
+        const q6 = document.querySelector('input[name="q6"]:checked')?.value;   // Q7: non-signature cocktail
+
         // Log for debugging
-        console.log('Question 1 (rain):', q1 || 'MISSING');
-        console.log('Question 2 (tim cry):', q2 || 'MISSING');
-        console.log('Question 3 (neckline):', q3 || 'MISSING');
-        console.log('Question 4 (first dance):', q4 || 'MISSING');
-        console.log('Question 5a (height feet):', q5_feet || 'MISSING');
-        console.log('Question 5b (height inches):', q5_inches || 'MISSING');
-        console.log('Question 6 (best man speech):', q6 || 'MISSING');
-        console.log('Question 7 (stevie mentions):', q7 || 'MISSING');
-        
+        console.log('Question 1 (neckline):', q3 || 'MISSING');
+        console.log('Question 2 (first dance):', q4 || 'MISSING');
+        console.log('Question 3 (stevie mentions):', q7 || 'MISSING');
+        console.log('Question 4a (height feet):', q5_feet || 'MISSING');
+        console.log('Question 4b (height inches):', q5_inches || 'MISSING');
+        console.log('Question 5 (guests named John):', q2 || 'MISSING');
+        console.log('Question 6 (outfit change):', q1 || 'MISSING');
+        console.log('Question 7 (non-signature cocktail):', q6 || 'MISSING');
+
         // Check each field
-        if (!q1) missingFields.push('Question 1 (rain)');
-        if (!q2) missingFields.push('Question 2 (Tim crying)');
-        if (!q3) missingFields.push('Question 3 (Neckline)');
-        if (!q4) missingFields.push('Question 4 (First dance)');
-        if (!q5_feet) missingFields.push('Question 5 (Height - feet)');
-        if (!q5_inches && q5_inches !== '0') missingFields.push('Question 5 (Height - inches)');
-        if (!q6) missingFields.push('Question 6 (Best man speech)');
-        if (!q7 && q7 !== '0') missingFields.push('Question 7 (Stevie mentions)');
+        if (!q3) missingFields.push('Question 1 (Neckline)');
+        if (!q4) missingFields.push('Question 2 (First dance)');
+        if (!q7 && q7 !== '0') missingFields.push('Question 3 (Stevie mentions)');
+        if (!q5_feet) missingFields.push('Question 4 (Height - feet)');
+        if (!q5_inches && q5_inches !== '0') missingFields.push('Question 4 (Height - inches)');
+        if (!q2 && q2 !== '0') missingFields.push('Question 5 (Guests named John)');
+        if (!q1) missingFields.push('Question 6 (Outfit change)');
+        if (!q6) missingFields.push('Question 7 (Non-signature cocktail)');
         
         if (missingFields.length > 0) {
             console.error('Missing fields:', missingFields);
@@ -127,14 +154,14 @@ async function handleSubmit(e) {
         showLoading(true);
         
         const submissionAnswers = {
-            q1: q1,
-            q2: q2,
-            q3: q3,
-            q4: q4,
-            q5_feet: parseInt(q5_feet),
+            q1: q1,                     // outfit change (Yes/No)
+            q2: parseInt(q2),           // guests named John (count)
+            q3: q3,                     // neckline
+            q4: q4,                     // first dance duration
+            q5_feet: parseInt(q5_feet), // groomsmen height
             q5_inches: parseInt(q5_inches),
-            q6: q6,
-            q7: parseInt(q7)
+            q6: q6,                     // non-signature cocktail
+            q7: parseInt(q7)            // Stevie mentions
         };
         
         console.log('Submitting:', submissionAnswers);

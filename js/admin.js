@@ -51,15 +51,21 @@ function showAdminDashboard() {
     document.getElementById('adminDashboard').classList.remove('hidden');
 }
 
-function switchTab(tabName) {
-    // Hide all tabs
-    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+function switchTab(tabName, evt) {
+    // Hide all tabs (both 'active' and 'hidden' are toggled; '.hidden' uses !important
+    // so it must be removed for the selected tab to actually show)
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+        tab.classList.add('hidden');
+    });
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-    
+
     // Show selected tab
-    document.getElementById(tabName + 'Tab').classList.add('active');
-    event.target.classList.add('active');
-    
+    const target = document.getElementById(tabName + 'Tab');
+    target.classList.add('active');
+    target.classList.remove('hidden');
+    if (evt && evt.target) evt.target.classList.add('active');
+
     // Load tab-specific data
     if (tabName === 'users') {
         loadUsers();
@@ -74,15 +80,17 @@ async function handleSaveAnswers(e) {
     try {
         showLoading(true);
         
+        const johnValue = document.getElementById('answerJohn').value;
         const answers = {
-            q1: document.querySelector('input[name="answer1"]:checked')?.value,
-            q2: document.querySelector('input[name="answer2"]:checked')?.value,
-            q3: document.querySelector('input[name="answer3"]:checked')?.value,
-            q4: document.querySelector('input[name="answer4"]:checked')?.value,
+            q1: document.querySelector('input[name="answer1"]:checked')?.value,   // outfit change
+            // guests named John: stored as a string to fit the VARCHAR(10) column; scoring parses it
+            q2: johnValue === '' ? null : johnValue,
+            q3: document.querySelector('input[name="answer3"]:checked')?.value,   // neckline
+            q4: document.querySelector('input[name="answer4"]:checked')?.value,   // first dance
             q5_feet: parseInt(document.getElementById('answer5Feet').value) || null,
             q5_inches: parseInt(document.getElementById('answer5Inches').value) || null,
-            q6: document.querySelector('input[name="answer6"]:checked')?.value,
-            q7: parseInt(document.getElementById('answer7').value) || null
+            q6: document.querySelector('input[name="answer6"]:checked')?.value,   // non-signature cocktail
+            q7: parseInt(document.getElementById('answer7').value) || null        // Stevie mentions
         };
         
         console.log('Admin saving answers:', answers);
@@ -119,28 +127,25 @@ async function handleSaveAnswers(e) {
     }
 }
 
+// Reset the answers form to a blank slate (also clears any accidentally-clicked radios)
+function clearAnswers() {
+    document.getElementById('answersForm').reset();
+}
+
 async function loadAdminData() {
     try {
         showLoading(true);
-        
-        // Load correct answers into form
-        const correctAnswers = await db.getCorrectAnswers();
-        if (correctAnswers) {
-            document.querySelector(`input[name="answer1"][value="${correctAnswers.q1}"]`).checked = true;
-            document.querySelector(`input[name="answer2"][value="${correctAnswers.q2}"]`).checked = true;
-            document.querySelector(`input[name="answer3"][value="${correctAnswers.q3}"]`).checked = true;
-            document.querySelector(`input[name="answer4"][value="${correctAnswers.q4}"]`).checked = true;
-            document.getElementById('answer5Feet').value = correctAnswers.q5_feet;
-            document.getElementById('answer5Inches').value = correctAnswers.q5_inches;
-            document.querySelector(`input[name="answer6"][value="${correctAnswers.q6}"]`).checked = true;
-            document.getElementById('answer7').value = correctAnswers.q7;
-        }
-        
+
+        // The answers form always starts blank (blank slate). Saving performs a
+        // partial update, so leaving a question blank never overwrites what's already
+        // stored — the admin only fills in answers as they become known.
+        clearAnswers();
+
         await loadUsers();
         await loadLeaderboardPreview();
-        
+
         showLoading(false);
-        
+
     } catch (error) {
         showLoading(false);
         console.error('Error loading admin data:', error);

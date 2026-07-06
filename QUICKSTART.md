@@ -63,14 +63,16 @@
 
 ### correct_answers table
 - `id` (UUID): Primary key
-- `q1` (VARCHAR): Yes/No
-- `q2` (VARCHAR): Yes/No
+- `q1` (VARCHAR): Outfit change at reception (Yes/No)
+- `q2` (VARCHAR): Guests named John (count, stored as string)
 - `q3` (VARCHAR): Neckline type
-- `q4` (VARCHAR): Over/Under 2 min
-- `q5_feet` (INTEGER): Height feet
-- `q5_inches` (INTEGER): Height inches
-- `q6` (VARCHAR): Over/Under 3 min
+- `q4` (VARCHAR): First dance Over/Under 2 min
+- `q5_feet` (INTEGER): Groomsmen height feet
+- `q5_inches` (INTEGER): Groomsmen height inches
+- `q6` (VARCHAR): Non-signature cocktail
 - `q7` (INTEGER): Stevie mentions count
+
+> Note: DB column names (`q1`–`q7`) are storage keys and do not match the on-screen question order. See the mapping comments in `js/app.js` / `js/db.js`.
 - `created_at` (TIMESTAMP): Created
 - `updated_at` (TIMESTAMP): Last updated
 

@@ -39,79 +39,61 @@
         </div>
     </div>
 
+    <!-- Submissions Closed Screen -->
+    <div id="closedScreen" class="screen hidden">
+        <div class="container">
+            <h1>Submissions Closed</h1>
+            <p class="subtitle">The big day is here!</p>
+
+            <div class="success-box">
+                <p>Predictions are now locked. Thanks to everyone who played!</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Questions Screen -->
     <div id="questionsScreen" class="screen hidden">
         <div class="container">
-            <h1>Wedding Predictions Quiz</h1>
+            <h1>Wedding Wagers</h1>
             <div class="progress-bar">
                 <div id="progressFill" class="progress-fill"></div>
             </div>
 
             <form id="questionsForm">
-                <!-- Question 1: Will it rain -->
+                <!-- Question 1: Amanda's neckline (stored in q3) -->
                 <div class="question-container" id="question1">
-                    <h2>Will it rain on the wedding day?</h2>
+                    <h2>What will the neckline of Amanda's dress be?</h2>
                     <div class="options">
                         <label class="option">
-                            <input type="radio" name="q1" value="Yes" required>
-                            <span>Yes</span>
+                            <input type="radio" name="q3" value="Halter" required>
+                            <span>Halter</span>
                         </label>
                         <label class="option">
-                            <input type="radio" name="q1" value="No" required>
-                            <span>No</span>
+                            <input type="radio" name="q3" value="Strapless" required>
+                            <span>Strapless</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="Off-the-Shoulder" required>
+                            <span>Off-the-Shoulder</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="Traditional Straps" required>
+                            <span>Traditional Straps</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q3" value="Long Sleeves" required>
+                            <span>Long Sleeves</span>
                         </label>
                     </div>
                 </div>
 
-                <!-- Question 2: Will Tim cry -->
+                <!-- Question 2: First dance duration (stored in q4) -->
                 <div class="question-container" id="question2">
-                    <h2>Will Tim cry when Amanda walks down the aisle?</h2>
-                    <div class="options">
-                        <label class="option">
-                            <input type="radio" name="q2" value="Yes" required>
-                            <span>Yes</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="q2" value="No" required>
-                            <span>No</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Question 3: Amanda's neckline -->
-                <div class="question-container" id="question3">
-                    <h2>What will be the neckline of Amanda's dress?</h2>
-                    <div class="options">
-                        <label class="option">
-                            <input type="radio" name="q3" value="V-Neck" required>
-                            <span>V-Neck</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="q3" value="Sweetheart" required>
-                            <span>Sweetheart</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="q3" value="Strapless/Bandeau" required>
-                            <span>Strapless/Bandeau</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="q3" value="Scoop Neck" required>
-                            <span>Scoop Neck</span>
-                        </label>
-                        <label class="option">
-                            <input type="radio" name="q3" value="Illusion/Off-Shoulder" required>
-                            <span>Illusion/Off-Shoulder</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Question 4: First dance duration -->
-                <div class="question-container" id="question4">
                     <h2>Will the first dance be over or under 2 minutes?</h2>
                     <div class="options">
                         <label class="option">
-                            <input type="radio" name="q4" value="Over 2 minutes" required>
-                            <span>Over 2 minutes</span>
+                            <input type="radio" name="q4" value="2 minutes or more" required>
+                            <span>2 minutes or more</span>
                         </label>
                         <label class="option">
                             <input type="radio" name="q4" value="Under 2 minutes" required>
@@ -120,8 +102,16 @@
                     </div>
                 </div>
 
-                <!-- Question 5: Groomsmen height -->
-                <div class="question-container" id="question5">
+                <!-- Question 3: Stevie mentions (stored in q7) -->
+                <div class="question-container" id="question3">
+                    <h2>How many "Stevie" mentions will there be during the speeches?</h2>
+                    <div class="form-group">
+                        <input type="number" id="stevieMentions" name="q7" min="0" max="100" required placeholder="Enter a number">
+                    </div>
+                </div>
+
+                <!-- Question 4: Groomsmen height (stored in q5_feet / q5_inches) -->
+                <div class="question-container" id="question4">
                     <h2>What is the average height of the groomsmen?</h2>
                     <div class="height-input">
                         <div class="form-group inline">
@@ -135,26 +125,49 @@
                     </div>
                 </div>
 
-                <!-- Question 6: Best Man speech -->
+                <!-- Question 5: Guests named John (stored in q2) -->
+                <div class="question-container" id="question5">
+                    <h2>How many guests named John will be in attendance?</h2>
+                    <div class="form-group">
+                        <input type="number" id="johnCount" name="q2" min="0" max="100" required placeholder="Enter a number">
+                    </div>
+                </div>
+
+                <!-- Question 6: Outfit change at reception (stored in q1) -->
                 <div class="question-container" id="question6">
-                    <h2>Will the Best Man speech be over or under 3 minutes?</h2>
+                    <h2>Will there be an outfit change at the reception?</h2>
                     <div class="options">
                         <label class="option">
-                            <input type="radio" name="q6" value="Over 3 minutes" required>
-                            <span>Over 3 minutes</span>
+                            <input type="radio" name="q1" value="Yes" required>
+                            <span>Yes</span>
                         </label>
                         <label class="option">
-                            <input type="radio" name="q6" value="Under 3 minutes" required>
-                            <span>Under 3 minutes</span>
+                            <input type="radio" name="q1" value="No" required>
+                            <span>No</span>
                         </label>
                     </div>
                 </div>
 
-                <!-- Question 7: Stevie mentions -->
+                <!-- Question 7: Non-signature cocktail (stored in q6) -->
                 <div class="question-container" id="question7">
-                    <h2>How many times will Stevie be mentioned during the speeches?</h2>
-                    <div class="form-group">
-                        <input type="number" id="stevieMentions" name="q7" min="0" max="100" required placeholder="Enter a number">
+                    <h2>Which of the following will not be a signature cocktail?</h2>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="q6" value="Espresso Martini" required>
+                            <span>Espresso Martini</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="Lavender French 75" required>
+                            <span>Lavender French 75</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="Spicy Margarita" required>
+                            <span>Spicy Margarita</span>
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="q6" value="Whiskey Sour" required>
+                            <span>Whiskey Sour</span>
+                        </label>
                     </div>
                 </div>
 
@@ -163,18 +176,16 @@
         </div>
     </div>
 
-    <!-- Success/Leaderboard Screen -->
+    <!-- Success Screen -->
     <div id="successScreen" class="screen hidden">
         <div class="container">
-            <h1>Thanks for Playing</h1>
+            <h1>Thanks for playing!</h1>
             <p class="subtitle">Your predictions have been recorded</p>
-            
+
             <div class="success-box">
                 <p>Results will be scored once the wedding day answers are confirmed by the admin.</p>
-                <p>Check the leaderboard to see how you stack up!</p>
             </div>
 
-            <a href="leaderboard.html" class="btn btn-primary">View Leaderboard</a>
             <button onclick="location.href='index.html'" class="btn btn-secondary">Play Again</button>
         </div>
     </div>

@@ -89,27 +89,27 @@ class Database {
         
         let correctCount = 0;
 
-        // Q1: Yes/No - only check if admin has provided answer
+        // q1: Outfit change (Yes/No) - only check if admin has provided answer
         if (correctAnswers.q1 !== null && correctAnswers.q1 !== undefined) {
             if (responseAnswers.q1 === correctAnswers.q1) correctCount++;
         }
 
-        // Q2: Yes/No
+        // q2: Guests named John (exact count match)
         if (correctAnswers.q2 !== null && correctAnswers.q2 !== undefined) {
-            if (responseAnswers.q2 === correctAnswers.q2) correctCount++;
+            if (parseInt(responseAnswers.q2, 10) === parseInt(correctAnswers.q2, 10)) correctCount++;
         }
 
-        // Q3: Neckline
+        // q3: Neckline
         if (correctAnswers.q3 !== null && correctAnswers.q3 !== undefined) {
             if (responseAnswers.q3 === correctAnswers.q3) correctCount++;
         }
 
-        // Q4: Duration
+        // q4: First dance duration
         if (correctAnswers.q4 !== null && correctAnswers.q4 !== undefined) {
             if (responseAnswers.q4 === correctAnswers.q4) correctCount++;
         }
 
-        // Q5: Height (allow 1 inch tolerance)
+        // q5: Groomsmen height (allow 1 inch tolerance)
         if (correctAnswers.q5_feet !== null && correctAnswers.q5_feet !== undefined &&
             correctAnswers.q5_inches !== null && correctAnswers.q5_inches !== undefined) {
             const userHeightInches = responseAnswers.q5_feet * 12 + responseAnswers.q5_inches;
@@ -117,14 +117,14 @@ class Database {
             if (Math.abs(userHeightInches - correctHeightInches) <= 1) correctCount++;
         }
 
-        // Q6: Duration
+        // q6: Non-signature cocktail
         if (correctAnswers.q6 !== null && correctAnswers.q6 !== undefined) {
             if (responseAnswers.q6 === correctAnswers.q6) correctCount++;
         }
 
-        // Q7: Mentions (allow within 2)
+        // q7: Stevie mentions (exact count match)
         if (correctAnswers.q7 !== null && correctAnswers.q7 !== undefined) {
-            if (Math.abs(responseAnswers.q7 - correctAnswers.q7) <= 2) correctCount++;
+            if (parseInt(responseAnswers.q7, 10) === parseInt(correctAnswers.q7, 10)) correctCount++;
         }
 
         return correctCount;
@@ -282,31 +282,31 @@ class Database {
                 let correctCount = 0;
                 let totalAnswered = 0;
 
-                // Q1: Yes/No - only check if admin has provided answer
+                // q1: Outfit change (Yes/No) - only check if admin has provided answer
                 if (correctAnswers.q1 !== null && correctAnswers.q1 !== undefined) {
                     totalAnswered++;
                     if (response.answers.q1 === correctAnswers.q1) correctCount++;
                 }
 
-                // Q2: Yes/No
+                // q2: Guests named John (exact count match)
                 if (correctAnswers.q2 !== null && correctAnswers.q2 !== undefined) {
                     totalAnswered++;
-                    if (response.answers.q2 === correctAnswers.q2) correctCount++;
+                    if (parseInt(response.answers.q2, 10) === parseInt(correctAnswers.q2, 10)) correctCount++;
                 }
 
-                // Q3: Neckline
+                // q3: Neckline
                 if (correctAnswers.q3 !== null && correctAnswers.q3 !== undefined) {
                     totalAnswered++;
                     if (response.answers.q3 === correctAnswers.q3) correctCount++;
                 }
 
-                // Q4: Duration
+                // q4: First dance duration
                 if (correctAnswers.q4 !== null && correctAnswers.q4 !== undefined) {
                     totalAnswered++;
                     if (response.answers.q4 === correctAnswers.q4) correctCount++;
                 }
 
-                // Q5: Height (allow 1 inch tolerance)
+                // q5: Groomsmen height (allow 1 inch tolerance)
                 if (correctAnswers.q5_feet !== null && correctAnswers.q5_feet !== undefined &&
                     correctAnswers.q5_inches !== null && correctAnswers.q5_inches !== undefined) {
                     totalAnswered++;
@@ -315,16 +315,16 @@ class Database {
                     if (Math.abs(userHeightInches - correctHeightInches) <= 1) correctCount++;
                 }
 
-                // Q6: Duration
+                // q6: Non-signature cocktail
                 if (correctAnswers.q6 !== null && correctAnswers.q6 !== undefined) {
                     totalAnswered++;
                     if (response.answers.q6 === correctAnswers.q6) correctCount++;
                 }
 
-                // Q7: Mentions (allow within 2)
+                // q7: Stevie mentions (exact count match)
                 if (correctAnswers.q7 !== null && correctAnswers.q7 !== undefined) {
                     totalAnswered++;
-                    if (Math.abs(response.answers.q7 - correctAnswers.q7) <= 2) correctCount++;
+                    if (parseInt(response.answers.q7, 10) === parseInt(correctAnswers.q7, 10)) correctCount++;
                 }
 
                 // Calculate score based on only answered questions

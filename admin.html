@@ -42,9 +42,9 @@
             </div>
 
             <div class="admin-tabs">
-                <button class="tab-btn active" onclick="switchTab('answers')">Set Answers</button>
-                <button class="tab-btn" onclick="switchTab('users')">Manage Users</button>
-                <button class="tab-btn" onclick="switchTab('leaderboard')">View Leaderboard</button>
+                <button class="tab-btn active" onclick="switchTab('answers', event)">Set Answers</button>
+                <button class="tab-btn" onclick="switchTab('users', event)">Manage Users</button>
+                <button class="tab-btn" onclick="switchTab('leaderboard', event)">View Leaderboard</button>
             </div>
 
             <!-- Set Answers Tab -->
@@ -52,55 +52,27 @@
                 <h2>Enter Correct Answers</h2>
                 <form id="answersForm">
                     <div class="form-group">
-                        <label>Will it rain on the wedding day?</label>
+                        <label>What will the neckline of Amanda's dress be?</label>
                         <div class="options">
                             <label class="option">
-                                <input type="radio" name="answer1" value="Yes">
-                                <span>Yes</span>
+                                <input type="radio" name="answer3" value="Halter">
+                                <span>Halter</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="answer1" value="No">
-                                <span>No</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Will Tim cry when Amanda walks down the aisle?</label>
-                        <div class="options">
-                            <label class="option">
-                                <input type="radio" name="answer2" value="Yes">
-                                <span>Yes</span>
+                                <input type="radio" name="answer3" value="Strapless">
+                                <span>Strapless</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="answer2" value="No">
-                                <span>No</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>What will be the neckline of Amanda's dress?</label>
-                        <div class="options">
-                            <label class="option">
-                                <input type="radio" name="answer3" value="V-Neck">
-                                <span>V-Neck</span>
+                                <input type="radio" name="answer3" value="Off-the-Shoulder">
+                                <span>Off-the-Shoulder</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="answer3" value="Sweetheart">
-                                <span>Sweetheart</span>
+                                <input type="radio" name="answer3" value="Traditional Straps">
+                                <span>Traditional Straps</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="answer3" value="Strapless/Bandeau">
-                                <span>Strapless/Bandeau</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="answer3" value="Scoop Neck">
-                                <span>Scoop Neck</span>
-                            </label>
-                            <label class="option">
-                                <input type="radio" name="answer3" value="Illusion/Off-Shoulder">
-                                <span>Illusion/Off-Shoulder</span>
+                                <input type="radio" name="answer3" value="Long Sleeves">
+                                <span>Long Sleeves</span>
                             </label>
                         </div>
                     </div>
@@ -109,14 +81,19 @@
                         <label>Will the first dance be over or under 2 minutes?</label>
                         <div class="options">
                             <label class="option">
-                                <input type="radio" name="answer4" value="Over 2 minutes">
-                                <span>Over 2 minutes</span>
+                                <input type="radio" name="answer4" value="2 minutes or more">
+                                <span>2 minutes or more</span>
                             </label>
                             <label class="option">
                                 <input type="radio" name="answer4" value="Under 2 minutes">
                                 <span>Under 2 minutes</span>
                             </label>
                         </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="answer7">How many "Stevie" mentions will there be during the speeches?</label>
+                        <input type="number" id="answer7" name="answer7" min="0" max="100">
                     </div>
 
                     <div class="form-group">
@@ -134,25 +111,48 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Will the Best Man speech be over or under 3 minutes?</label>
+                        <label for="answerJohn">How many guests named John will be in attendance?</label>
+                        <input type="number" id="answerJohn" name="answer2" min="0" max="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Will there be an outfit change at the reception?</label>
                         <div class="options">
                             <label class="option">
-                                <input type="radio" name="answer6" value="Over 3 minutes">
-                                <span>Over 3 minutes</span>
+                                <input type="radio" name="answer1" value="Yes">
+                                <span>Yes</span>
                             </label>
                             <label class="option">
-                                <input type="radio" name="answer6" value="Under 3 minutes">
-                                <span>Under 3 minutes</span>
+                                <input type="radio" name="answer1" value="No">
+                                <span>No</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label for="answer7">How many times will Stevie be mentioned during the speeches?</label>
-                        <input type="number" id="answer7" name="answer7" min="0" max="100">
+                        <label>Which of the following will not be a signature cocktail?</label>
+                        <div class="options">
+                            <label class="option">
+                                <input type="radio" name="answer6" value="Espresso Martini">
+                                <span>Espresso Martini</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="answer6" value="Lavender French 75">
+                                <span>Lavender French 75</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="answer6" value="Spicy Margarita">
+                                <span>Spicy Margarita</span>
+                            </label>
+                            <label class="option">
+                                <input type="radio" name="answer6" value="Whiskey Sour">
+                                <span>Whiskey Sour</span>
+                            </label>
+                        </div>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Save Answers</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearAnswers()">Clear</button>
                 </form>
             </div>
 
