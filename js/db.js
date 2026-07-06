@@ -247,6 +247,43 @@ class Database {
         }
     }
 
+    // Clear all correct answers (admin function) - sets every question back to null
+    async clearCorrectAnswers() {
+        try {
+            const { data: existingData, error: fetchError } = await this.supabase
+                .from('correct_answers')
+                .select('id')
+                .limit(1);
+
+            if (fetchError && fetchError.code !== 'PGRST116') throw fetchError;
+
+            // Nothing has been saved yet, so there is nothing to clear
+            if (!existingData || existingData.length === 0) {
+                console.log('No correct answers row to clear');
+                return null;
+            }
+
+            const cleared = {
+                q1: null, q2: null, q3: null, q4: null,
+                q5_feet: null, q5_inches: null, q6: null, q7: null,
+                updated_at: new Date().toISOString()
+            };
+
+            console.log('Clearing all correct answers...');
+            const { data, error } = await this.supabase
+                .from('correct_answers')
+                .update(cleared)
+                .eq('id', existingData[0].id)
+                .select();
+
+            if (error) throw error;
+            return data[0];
+        } catch (error) {
+            console.error('Error clearing answers:', error);
+            throw error;
+        }
+    }
+
     // Get correct answers
     async getCorrectAnswers() {
         try {

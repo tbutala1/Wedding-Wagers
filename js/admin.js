@@ -94,16 +94,9 @@ async function handleSaveAnswers(e) {
         };
         
         console.log('Admin saving answers:', answers);
-        
-        // Check if at least one answer is provided
-        const hasAnyAnswer = Object.values(answers).some(val => val !== null && val !== undefined && val !== '');
-        if (!hasAnyAnswer) {
-            alert('Please enter at least one answer');
-            showLoading(false);
-            return;
-        }
-        
-        // Count completed answers
+
+        // Count completed answers (saving with none filled in is allowed — use Clear
+        // to wipe everything; a partial save only updates the fields you provide)
         const completedCount = Object.values(answers).filter(val => val !== null && val !== undefined && val !== '').length;
         console.log(`Saving ${completedCount} answers...`);
         
@@ -127,9 +120,37 @@ async function handleSaveAnswers(e) {
     }
 }
 
-// Reset the answers form to a blank slate (also clears any accidentally-clicked radios)
-function clearAnswers() {
+// Reset the on-screen answers form only (no backend changes)
+function resetAnswersForm() {
     document.getElementById('answersForm').reset();
+}
+
+// Clear ALL saved correct answers on the backend and reset the leaderboard.
+// Wipes every question in the correct_answers table, then recalculates scores
+// (which become null since nothing is answered) so both leaderboards update.
+async function clearAnswers() {
+    if (!confirm('Clear all saved correct answers? This wipes them on the backend and resets the leaderboard for everyone.')) {
+        return;
+    }
+
+    try {
+        showLoading(true);
+
+        resetAnswersForm();
+        await db.clearCorrectAnswers();
+        await db.calculateScores();
+
+        showLoading(false);
+        alert('✅ All correct answers cleared. The leaderboard has been reset.');
+
+        // Refresh users + leaderboard preview
+        loadAdminData();
+
+    } catch (error) {
+        showLoading(false);
+        console.error('Error clearing answers:', error);
+        alert('Error clearing answers: ' + error.message);
+    }
 }
 
 async function loadAdminData() {
@@ -139,7 +160,7 @@ async function loadAdminData() {
         // The answers form always starts blank (blank slate). Saving performs a
         // partial update, so leaving a question blank never overwrites what's already
         // stored — the admin only fills in answers as they become known.
-        clearAnswers();
+        resetAnswersForm();
 
         await loadUsers();
         await loadLeaderboardPreview();
