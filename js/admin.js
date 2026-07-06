@@ -157,10 +157,32 @@ async function loadAdminData() {
     try {
         showLoading(true);
 
-        // The answers form always starts blank (blank slate). Saving performs a
-        // partial update, so leaving a question blank never overwrites what's already
-        // stored — the admin only fills in answers as they become known.
+        // Pre-fill the form with whatever is currently saved so the admin can see
+        // the current state (and a just-saved answer visibly sticks). Start from a
+        // blank form, then restore any saved values. Use Clear to wipe everything.
         resetAnswersForm();
+        const correctAnswers = await db.getCorrectAnswers();
+        if (correctAnswers) {
+            // Guard each lookup: a saved value may not match the current options.
+            const setRadio = (name, value) => {
+                if (value === null || value === undefined || value === '') return;
+                const el = document.querySelector(`input[name="${name}"][value="${value}"]`);
+                if (el) el.checked = true;
+            };
+            const setValue = (id, value) => {
+                if (value === null || value === undefined) return;
+                document.getElementById(id).value = value;
+            };
+
+            setRadio('answer1', correctAnswers.q1);         // outfit change
+            setValue('answerJohn', correctAnswers.q2);      // guests named John
+            setRadio('answer3', correctAnswers.q3);         // neckline
+            setRadio('answer4', correctAnswers.q4);         // first dance
+            setValue('answer5Feet', correctAnswers.q5_feet);
+            setValue('answer5Inches', correctAnswers.q5_inches);
+            setRadio('answer6', correctAnswers.q6);         // non-signature cocktail
+            setValue('answer7', correctAnswers.q7);         // Stevie mentions
+        }
 
         await loadUsers();
         await loadLeaderboardPreview();
